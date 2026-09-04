@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { QuizSection } from '@/types/aisat';
-import { Clock, CheckCircle, AlertCircle, Save } from 'lucide-react';
+import { Clock, CheckCircle2 } from 'lucide-react';
 
 interface QuizHeaderProps {
   title: string;
@@ -51,44 +52,36 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
   const isLowTime = secondsRemaining < 300; // Under 5 minutes
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/[0.08] bg-[#07090E]/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-200 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
         
-        {/* Left: Test Info & Save State */}
-        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-black text-black text-sm">
-              ⚡
-            </div>
-            <div>
-              <div className="font-extrabold text-sm text-white flex items-center gap-2">
-                <span>AISAT 2026</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-bold border border-amber-500/30">
-                  LIVE TEST
-                </span>
-              </div>
-              <div className="text-[11px] text-slate-400 font-medium truncate max-w-[200px] sm:max-w-xs">
-                {title}
-              </div>
-            </div>
+        {/* Left: Capabl Logo & Test Title */}
+        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
+          <div className="flex items-center">
+            <span className="text-xl font-black tracking-tight text-gray-950">
+              Capa
+            </span>
+            <span className="text-xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">
+              bl.
+            </span>
+            <span className="ml-2 text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+              AISAT
+            </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-white/[0.03] px-2.5 py-1 rounded-lg border border-white/[0.06]">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200">
             {isSaving ? (
-              <>
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                <span className="text-amber-400 text-[11px]">Saving...</span>
-              </>
+              <span className="text-amber-600 font-semibold text-[11px] animate-pulse">Saving...</span>
             ) : (
               <>
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-[11px] text-slate-400">Autosaved</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-[11px] text-gray-600">Saved</span>
               </>
             )}
           </div>
         </div>
 
-        {/* Center: Section Selectors */}
+        {/* Center: Section Switcher Pills */}
         <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 md:pb-0">
           {sections.map((sec, idx) => {
             const isActive = sec.id === activeSectionId;
@@ -96,10 +89,10 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
               <button
                 key={sec.id}
                 onClick={() => onSelectSection(sec.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
-                    : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-white/[0.06]'
+                    ? 'bg-gray-900 text-white shadow-xs'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 <span>Sec {idx + 1}: {sec.title.split(' ')[0]}</span>
@@ -108,22 +101,22 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
           })}
         </div>
 
-        {/* Right: Timer & Submit Action */}
-        <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+        {/* Right: Timer & Submit Button */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
           <div
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-mono font-bold text-sm border transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg font-mono font-bold text-sm border ${
               isLowTime
-                ? 'bg-red-500/10 border-red-500/40 text-red-400 animate-pulse'
-                : 'bg-white/[0.04] border-white/[0.1] text-amber-400'
+                ? 'bg-red-50 border-red-300 text-red-700 animate-pulse'
+                : 'bg-gray-50 border-gray-200 text-gray-900'
             }`}
           >
-            <Clock className="w-4 h-4" />
+            <Clock className="w-4 h-4 text-gray-500" />
             <span>{formatTime(secondsRemaining)}</span>
           </div>
 
           <button
             onClick={onSubmitClick}
-            className="btn-primary-gradient px-4 py-2 rounded-xl text-xs sm:text-sm font-bold cursor-pointer shadow-md shadow-amber-500/20"
+            className="btn-capabl px-4 py-2 rounded-lg text-xs sm:text-sm font-bold text-black cursor-pointer shadow-xs"
           >
             Submit Test
           </button>

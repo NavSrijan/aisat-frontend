@@ -2,19 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Award, ArrowRight, ShieldCheck, Mail, Phone, School, Sparkles, Home } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Home } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function TestCompletedPage() {
   const [submission, setSubmission] = useState<any>(null);
 
   useEffect(() => {
-    // Fire confetti on load
     confetti({
-      particleCount: 80,
-      spread: 70,
+      particleCount: 60,
+      spread: 60,
       origin: { y: 0.6 },
-      colors: ['#F59E0B', '#FBBF24', '#10B981', '#FFFFFF'],
+      colors: ['#FFC700', '#10B981', '#0F172A'],
     });
 
     const raw = sessionStorage.getItem('aisat_final_submission');
@@ -30,19 +29,24 @@ export default function TestCompletedPage() {
   const candidate = submission?.candidate;
 
   return (
-    <div className="min-h-screen bg-[#07090E] text-slate-100 flex flex-col justify-between selection:bg-amber-500 selection:text-black">
-      {/* Header Bar */}
-      <header className="border-b border-white/[0.08] bg-[#0A0E18] py-4">
+    <div className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 py-4 shadow-2xs">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-black text-black text-sm">
-              ⚡
-            </div>
-            <span className="font-extrabold text-sm tracking-tight text-white">CAPABL AISAT 2026</span>
+          <div className="flex items-center">
+            <span className="text-xl font-black tracking-tight text-gray-950">
+              Capa
+            </span>
+            <span className="text-xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">
+              bl.
+            </span>
+            <span className="ml-2 text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+              AISAT
+            </span>
           </div>
           <Link
             href="/"
-            className="text-xs text-slate-400 hover:text-amber-400 flex items-center gap-1 font-medium transition-colors"
+            className="text-xs text-gray-600 hover:text-black flex items-center gap-1 font-medium transition-colors"
           >
             <Home className="w-3.5 h-3.5" />
             <span>Home</span>
@@ -51,88 +55,50 @@ export default function TestCompletedPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-3xl w-full mx-auto px-4 py-12 flex-1 flex flex-col items-center justify-center text-center">
+      <main className="max-w-xl w-full mx-auto px-4 py-12 flex-1 flex flex-col items-center justify-center text-center">
         
-        {/* Animated Check Icon */}
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-emerald-500/20 via-amber-500/20 to-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-6 shadow-2xl shadow-emerald-500/10 animate-bounce">
-          <CheckCircle2 className="w-10 h-10" />
+        <div className="w-16 h-16 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700 mb-6">
+          <CheckCircle2 className="w-8 h-8" />
         </div>
 
-        {/* Headline */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-4">
-          <Sparkles className="w-3.5 h-3.5" />
-          Test Response Recorded
-        </div>
-
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-3">
-          Assessment Submitted Successfully!
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-950 tracking-tight mb-2">
+          Assessment Submitted Successfully
         </h1>
-        <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed mb-8">
-          Thank you for taking the <strong>All India Scholarship & Assessment Test (AISAT 2026)</strong>. Your answers and performance metrics have been captured.
+        <p className="text-sm text-gray-600 mb-8">
+          Your answers and basic details have been recorded.
         </p>
 
-        {/* Candidate & Attempt Summary Card */}
         {candidate && (
-          <div className="w-full glass-card rounded-2xl p-6 sm:p-8 border border-white/[0.08] text-left mb-8 shadow-xl">
-            <div className="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-5">
+          <div className="w-full bg-white rounded-xl p-6 border border-gray-200 shadow-xs text-left mb-8">
+            <div className="border-b border-gray-100 pb-3 mb-4 flex items-center justify-between">
               <div>
-                <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
-                  Registration Details
-                </div>
-                <div className="text-lg font-extrabold text-white mt-0.5">{candidate.name}</div>
+                <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Candidate</div>
+                <div className="text-base font-extrabold text-gray-950">{candidate.name}</div>
               </div>
-              <div className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold">
-                {candidate.graduationYear} Batch
-              </div>
+              <span className="px-2 py-0.5 rounded text-xs font-bold bg-gray-100 text-gray-700">
+                Class of {candidate.graduationYear}
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                <span className="truncate">{candidate.email}</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-slate-300">
-                <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                <span>{candidate.phoneNumber}</span>
-              </div>
-              <div className="flex items-center gap-2.5 text-slate-300 sm:col-span-2">
-                <School className="w-4 h-4 text-slate-400 shrink-0" />
-                <span className="truncate">{candidate.college} ({candidate.branch})</span>
-              </div>
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
-              <span>Target Track: <strong className="text-white">{candidate.targetDomain}</strong></span>
-              <span>Submission Time: <strong className="text-white">{new Date().toLocaleTimeString()}</strong></span>
+            <div className="space-y-2 text-xs text-gray-600">
+              <div><span className="font-semibold text-gray-700">Email:</span> {candidate.email}</div>
+              <div><span className="font-semibold text-gray-700">Phone:</span> {candidate.phoneNumber}</div>
+              <div><span className="font-semibold text-gray-700">College:</span> {candidate.college} ({candidate.branch})</div>
             </div>
           </div>
         )}
 
-        {/* Next Steps Box */}
-        <div className="w-full rounded-2xl bg-white/[0.02] border border-white/[0.06] p-6 text-left mb-8 space-y-3">
-          <div className="font-extrabold text-sm text-white flex items-center gap-2">
-            <Award className="w-4 h-4 text-amber-400" />
-            <span>What Happens Next?</span>
-          </div>
-          <div className="text-xs text-slate-400 space-y-2 leading-relaxed">
-            <p>1. <strong>Scorecard Generation</strong>: Our automated grading system is calculating your domain percentiles and problem-solving benchmarks.</p>
-            <p>2. <strong>Scholarship Evaluation</strong>: Your rank will be mapped against Capabl&apos;s ₹10 Cr scholarship allocation pool.</p>
-            <p>3. <strong>Admissions Intimation</strong>: You will receive an official performance scorecard and counseling invite on your registered email and WhatsApp number.</p>
-          </div>
-        </div>
-
-        {/* Return Button */}
         <Link
           href="/"
-          className="btn-primary-gradient px-8 py-3.5 rounded-xl font-black text-sm flex items-center gap-2 cursor-pointer shadow-lg shadow-amber-500/20"
+          className="btn-capabl px-6 py-3 rounded-lg font-bold text-sm text-black flex items-center gap-2 shadow-xs cursor-pointer"
         >
-          <span>Return to AISAT Home</span>
+          <span>Return to Home</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
+
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/[0.06] py-6 text-center text-xs text-slate-500">
+      <footer className="border-t border-gray-200 py-6 text-center text-xs text-gray-500 bg-white">
         © {new Date().getFullYear()} Capabl. All rights reserved.
       </footer>
     </div>

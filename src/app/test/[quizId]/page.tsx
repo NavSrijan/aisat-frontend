@@ -22,10 +22,6 @@ import {
   ChevronRight,
   Bookmark,
   RotateCcw,
-  CheckCircle2,
-  HelpCircle,
-  Sparkles,
-  Award,
 } from 'lucide-react';
 
 interface PageProps {
@@ -44,7 +40,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Load candidate info from session storage
   useEffect(() => {
     const raw = sessionStorage.getItem('aisat_candidate');
     if (raw) {
@@ -59,7 +54,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const currentQuestion: QuizQuestion = quiz.questions[currentIndex] || quiz.questions[0];
   const activeSectionId = currentQuestion.sectionId;
 
-  // Active user response for current question
   const currentResponse = responses[currentQuestion.id] || {
     questionId: currentQuestion.id,
     type: currentQuestion.type,
@@ -81,8 +75,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
       [currentQuestion.id]: updated,
     };
     setResponses(newResponses);
-
-    // Save in session storage
     sessionStorage.setItem('aisat_responses', JSON.stringify(newResponses));
 
     setTimeout(() => {
@@ -133,7 +125,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
   const handleConfirmSubmit = () => {
     setIsSubmitting(true);
-    // Package submission payload
     const submissionPayload = {
       quizId: quiz.id,
       candidate,
@@ -149,7 +140,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
     }, 800);
   };
 
-  // Render question component based on type
   const renderInteractionWidget = () => {
     switch (currentQuestion.type) {
       case 'MCQ_SINGLE':
@@ -214,8 +204,8 @@ export default function QuizPlayerPage({ params }: PageProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090E] text-slate-100">
-      {/* Test Sticky Header */}
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-gray-900">
+      {/* Quiz Sticky Header */}
       <QuizHeader
         title={quiz.title}
         sections={quiz.sections}
@@ -227,62 +217,61 @@ export default function QuizPlayerPage({ params }: PageProps) {
         isSaving={isSaving}
       />
 
-      {/* Main Test Arena */}
+      {/* Main Arena */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
-          {/* Question Main Stage (8 cols) */}
+          {/* Question Stage (8 cols) */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="glass-card rounded-2xl p-6 sm:p-8 border border-white/[0.08] relative">
+            <div className="bg-white rounded-xl p-6 sm:p-8 border border-gray-200 shadow-xs">
               
-              {/* Question Metadata Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-white/[0.08] mb-6">
+              {/* Question Header */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-6">
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 font-extrabold text-xs tracking-wider uppercase">
+                  <span className="px-2.5 py-1 rounded-md bg-[#FFC700] text-gray-950 font-bold text-xs">
                     Question {currentIndex + 1} of {quiz.questions.length}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">
-                    {currentQuestion.type.replace('_', ' ')}
+                  <span className="text-xs text-gray-500 font-semibold">
+                    {currentQuestion.type.replace(/_/g, ' ')}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                     +{currentQuestion.marks} Marks
                   </span>
                   {currentQuestion.negativeMarks && (
-                    <span className="px-2.5 py-1 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold border border-red-500/20">
+                    <span className="px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">
                       -{currentQuestion.negativeMarks} Negative
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Question Title & Prompt */}
-              <div className="space-y-4 mb-8">
-                <h3 className="font-bold text-base sm:text-lg text-white leading-snug">
+              {/* Question Prompt */}
+              <div className="space-y-3 mb-6">
+                <h3 className="font-bold text-base text-gray-900 leading-snug">
                   {currentQuestion.title}
                 </h3>
-                <div className="text-sm sm:text-base text-slate-200 leading-relaxed whitespace-pre-line font-normal">
+                <div className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-line">
                   {currentQuestion.prompt}
                 </div>
               </div>
 
-              {/* Dynamic Interaction Renderer Component */}
+              {/* Dynamic Interaction Renderer */}
               <div className="pt-2 pb-6">
                 {renderInteractionWidget()}
               </div>
 
               {/* Action Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-white/[0.08]">
-                {/* Left actions: Mark for Review & Clear */}
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-gray-100">
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleToggleMarkForReview}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                       currentResponse.isMarkedForReview
-                        ? 'bg-purple-500 text-white shadow-md shadow-purple-500/20'
-                        : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] border border-white/[0.08]'
+                        ? 'bg-purple-700 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
                     <Bookmark className="w-3.5 h-3.5" />
@@ -291,19 +280,18 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
                   <button
                     onClick={handleClearResponse}
-                    className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors cursor-pointer text-xs"
+                    className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-xs"
                     title="Clear response"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {/* Right actions: Previous & Next */}
                 <div className="flex items-center gap-3">
                   <button
                     onClick={handlePrev}
                     disabled={currentIndex === 0}
-                    className="px-4 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-bold text-slate-300 hover:bg-white/[0.08] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer transition-colors"
+                    className="px-4 py-2 rounded-lg bg-gray-100 text-xs font-bold text-gray-700 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer transition-colors"
                   >
                     <ChevronLeft className="w-4 h-4" />
                     <span>Previous</span>
@@ -312,7 +300,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
                   <button
                     onClick={handleNext}
                     disabled={currentIndex === quiz.questions.length - 1}
-                    className="btn-primary-gradient px-5 py-2 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-amber-500/20"
+                    className="btn-capabl px-5 py-2 rounded-lg text-xs font-bold text-black flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
                   >
                     <span>Save & Next</span>
                     <ChevronRight className="w-4 h-4" />
@@ -324,23 +312,21 @@ export default function QuizPlayerPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Right Sidebar: Candidate Snapshot & Palette (4 cols) */}
+          {/* Right Sidebar (4 cols) */}
           <div className="lg:col-span-4 space-y-6">
-            {/* Candidate Card */}
             {candidate && (
-              <div className="glass-card rounded-2xl p-5 border border-white/[0.08]">
-                <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-2">
-                  Candidate Session
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-xs">
+                <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">
+                  Candidate
                 </div>
-                <div className="font-extrabold text-base text-white">{candidate.name}</div>
-                <div className="text-xs text-slate-400 truncate mt-0.5">{candidate.college}</div>
-                <div className="text-[11px] text-slate-500 mt-1">
+                <div className="font-extrabold text-base text-gray-950">{candidate.name}</div>
+                <div className="text-xs text-gray-500 truncate mt-0.5">{candidate.college}</div>
+                <div className="text-xs text-gray-500 mt-1">
                   {candidate.branch} • Class of {candidate.graduationYear}
                 </div>
               </div>
             )}
 
-            {/* Question Palette */}
             <QuestionPalette
               questions={quiz.questions}
               currentIndex={currentIndex}
@@ -352,7 +338,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
         </div>
       </main>
 
-      {/* Submission Confirmation Modal */}
       <SubmitModal
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { QuizQuestion } from '@/types/aisat';
-import { ArrowRight, Link2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface MatchColumnsRendererProps {
   question: QuizQuestion;
@@ -29,38 +29,37 @@ export const MatchColumnsRenderer: React.FC<MatchColumnsRendererProps> = ({ ques
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-xs font-semibold text-slate-400 flex items-center gap-2">
-        <Link2 className="w-4 h-4 text-amber-400" />
-        <span>Match each item in Column A with its corresponding pair in Column B:</span>
+    <div className="space-y-4">
+      <div className="text-xs font-semibold text-gray-500">
+        Match each item in Column A with its pair in Column B:
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {leftItems.map((left) => {
           const selectedRightId = currentPairs[left.id] || '';
           return (
             <div
               key={left.id}
-              className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all hover:bg-white/[0.05]"
+              className="p-3.5 rounded-xl bg-gray-50 border border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3"
             >
-              <div className="font-medium text-sm text-slate-100 md:w-1/2">
+              <div className="font-medium text-sm text-gray-900 md:w-1/2">
                 {left.text}
               </div>
 
-              <div className="flex items-center gap-3 md:w-1/2">
-                <ArrowRight className="w-4 h-4 text-amber-400 shrink-0 hidden md:block" />
+              <div className="flex items-center gap-2 md:w-1/2">
+                <ArrowRight className="w-4 h-4 text-gray-400 shrink-0 hidden md:block" />
                 <select
                   value={selectedRightId}
                   onChange={(e) => handleSelectPair(left.id, e.target.value)}
-                  className={`w-full px-3.5 py-2.5 rounded-lg border text-xs sm:text-sm font-medium transition-all cursor-pointer ${
+                  className={`w-full px-3 py-2 rounded-lg border text-xs sm:text-sm font-medium transition-all cursor-pointer bg-white ${
                     selectedRightId
-                      ? 'bg-amber-500/10 border-amber-500/50 text-amber-200'
-                      : 'bg-[#131A2B] border-white/[0.12] text-slate-400'
+                      ? 'border-[#FFC700] text-gray-950 font-bold ring-1 ring-[#FFC700]'
+                      : 'border-gray-300 text-gray-500'
                   }`}
                 >
-                  <option value="">-- Select Matching Pair --</option>
+                  <option value="">-- Select Match --</option>
                   {rightItems.map((right) => (
-                    <option key={right.id} value={right.id} className="bg-[#0E131F] text-white">
+                    <option key={right.id} value={right.id}>
                       {right.text}
                     </option>
                   ))}

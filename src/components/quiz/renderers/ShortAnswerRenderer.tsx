@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { QuizQuestion } from '@/types/aisat';
-import { FileText } from 'lucide-react';
 
 interface ShortAnswerRendererProps {
   question: QuizQuestion;
@@ -15,21 +14,18 @@ export const ShortAnswerRenderer: React.FC<ShortAnswerRendererProps> = ({ questi
   const wordCount = currentText.trim() ? currentText.trim().split(/\s+/).length : 0;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between text-xs text-slate-400">
-        <span className="flex items-center gap-1.5 font-semibold">
-          <FileText className="w-4 h-4 text-amber-400" />
-          Type your descriptive technical answer:
-        </span>
-        <span className="font-mono text-slate-500">{wordCount} words</span>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between text-xs text-gray-500">
+        <span className="font-semibold">Type your answer:</span>
+        <span className="font-mono">{wordCount} words</span>
       </div>
 
       <textarea
-        rows={6}
-        placeholder="Structure your answer clearly covering core principles, operational flow, and trade-offs..."
+        rows={5}
+        placeholder="Type your explanation clearly..."
         value={currentText}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-4 rounded-xl bg-black/40 border border-white/[0.12] text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 leading-relaxed font-sans"
+        className="w-full p-3.5 rounded-xl bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FFC700] focus:ring-1 focus:ring-[#FFC700] leading-relaxed"
       />
     </div>
   );

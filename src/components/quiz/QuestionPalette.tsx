@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { QuizQuestion, UserResponse } from '@/types/aisat';
-import { Bookmark, CheckCircle2, Circle, Eye } from 'lucide-react';
 
 interface QuestionPaletteProps {
   questions: QuizQuestion[];
@@ -17,10 +16,8 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
   onSelectIndex,
   responses,
 }) => {
-  // Count statuses
   let answeredCount = 0;
   let markedCount = 0;
-  let unvisitedCount = 0;
 
   questions.forEach((q) => {
     const res = responses[q.id];
@@ -28,39 +25,36 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
       markedCount++;
     } else if (res?.answer !== undefined && res?.answer !== null && res?.answer !== '') {
       answeredCount++;
-    } else {
-      unvisitedCount++;
     }
   });
 
   return (
-    <div className="glass-card rounded-2xl p-5 border border-white/[0.08] space-y-6">
-      {/* Header & Status Summary */}
+    <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-xs space-y-5">
+      {/* Header & Counts */}
       <div>
-        <h4 className="font-extrabold text-sm text-white mb-3 flex items-center justify-between">
-          <span>Question Palette</span>
-          <span className="text-xs text-amber-400 font-mono font-bold">
-            {currentIndex + 1} / {questions.length}
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-extrabold text-sm text-gray-950">
+            Question Palette
+          </h4>
+          <span className="text-xs text-gray-500 font-bold font-mono">
+            {currentIndex + 1} of {questions.length}
           </span>
-        </h4>
+        </div>
 
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-between font-medium">
+          <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between font-medium">
             <span>Answered</span>
             <span className="font-bold">{answeredCount}</span>
           </div>
-          <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-between font-medium">
-            <span>Review</span>
+          <div className="p-2 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 flex items-center justify-between font-medium">
+            <span>Marked</span>
             <span className="font-bold">{markedCount}</span>
           </div>
         </div>
       </div>
 
-      {/* Grid of Question Buttons */}
+      {/* Grid of numbers */}
       <div>
-        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5">
-          Select Question
-        </div>
         <div className="grid grid-cols-5 gap-2">
           {questions.map((q, idx) => {
             const isCurrent = currentIndex === idx;
@@ -68,24 +62,24 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
             const isAnswered = res?.answer !== undefined && res?.answer !== null && res?.answer !== '';
             const isMarked = res?.isMarkedForReview;
 
-            let badgeStyle = 'bg-white/[0.04] text-slate-400 border-white/[0.08] hover:bg-white/[0.08]';
+            let badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100';
             if (isMarked) {
-              badgeStyle = 'bg-purple-500/20 text-purple-300 border-purple-500/50 shadow-sm shadow-purple-500/20';
+              badgeStyle = 'bg-purple-100 text-purple-900 border-purple-300 font-bold';
             } else if (isAnswered) {
-              badgeStyle = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-sm shadow-emerald-500/20';
+              badgeStyle = 'bg-emerald-100 text-emerald-900 border-emerald-300 font-bold';
             }
 
             return (
               <button
                 key={q.id}
                 onClick={() => onSelectIndex(idx)}
-                className={`w-full aspect-square rounded-xl text-xs font-bold flex items-center justify-center border transition-all cursor-pointer relative ${badgeStyle} ${
-                  isCurrent ? 'ring-2 ring-amber-400 font-black scale-105 z-10' : ''
+                className={`w-full aspect-square rounded-lg text-xs font-bold flex items-center justify-center border transition-all cursor-pointer relative ${badgeStyle} ${
+                  isCurrent ? 'ring-2 ring-black font-black scale-105 z-10' : ''
                 }`}
               >
                 <span>{idx + 1}</span>
                 {isMarked && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400 absolute top-1 right-1" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-600 absolute top-1 right-1" />
                 )}
               </button>
             );
@@ -94,17 +88,17 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
       </div>
 
       {/* Legend */}
-      <div className="pt-4 border-t border-white/[0.06] space-y-2 text-[11px] text-slate-400">
+      <div className="pt-3 border-t border-gray-100 space-y-1.5 text-xs text-gray-500">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-500" />
+          <div className="w-3 h-3 rounded bg-emerald-100 border border-emerald-400" />
           <span>Answered</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-purple-500/30 border border-purple-500" />
+          <div className="w-3 h-3 rounded bg-purple-100 border border-purple-400" />
           <span>Marked for Review</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-white/[0.06] border border-white/[0.12]" />
+          <div className="w-3 h-3 rounded bg-gray-50 border border-gray-300" />
           <span>Not Answered</span>
         </div>
       </div>

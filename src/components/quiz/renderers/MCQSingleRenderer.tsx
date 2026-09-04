@@ -12,10 +12,10 @@ interface MCQSingleRendererProps {
 export const MCQSingleRenderer: React.FC<MCQSingleRendererProps> = ({ question, value, onChange }) => {
   return (
     <div className="space-y-3">
-      <div className="text-xs font-semibold text-slate-400 mb-2">
-        Select one correct option:
+      <div className="text-xs font-semibold text-gray-500 mb-2">
+        Select one option:
       </div>
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-2.5">
         {question.options?.map((opt, idx) => {
           const isSelected = value === opt.id;
           const letter = String.fromCharCode(65 + idx);
@@ -23,32 +23,32 @@ export const MCQSingleRenderer: React.FC<MCQSingleRendererProps> = ({ question, 
             <button
               key={opt.id}
               onClick={() => onChange(opt.id)}
-              className={`w-full p-4 rounded-xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+              className={`w-full p-4 rounded-xl border text-left flex items-center gap-3.5 transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-amber-500/10 border-amber-500 text-white shadow-md shadow-amber-500/10'
-                  : 'bg-white/[0.03] border-white/[0.08] text-slate-200 hover:bg-white/[0.06] hover:border-white/[0.15]'
+                  ? 'bg-amber-50/60 border-[#FFC700] text-gray-950 font-semibold ring-1 ring-[#FFC700]'
+                  : 'bg-white border-gray-200 text-gray-800 hover:bg-gray-50 hover:border-gray-300'
               }`}
             >
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
+                className={`w-7 h-7 rounded-md flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${
                   isSelected
-                    ? 'bg-amber-500 text-black'
-                    : 'bg-white/[0.06] text-slate-400'
+                    ? 'bg-[#FFC700] text-black'
+                    : 'bg-gray-100 text-gray-700'
                 }`}
               >
                 {letter}
               </div>
-              <span className="text-sm sm:text-base font-medium flex-1">
+              <span className="text-sm font-medium flex-1">
                 {opt.text}
               </span>
               <div
-                className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                   isSelected
-                    ? 'border-amber-500 bg-amber-500'
-                    : 'border-slate-600 bg-transparent'
+                    ? 'border-gray-900 bg-gray-900'
+                    : 'border-gray-300 bg-white'
                 }`}
               >
-                {isSelected && <div className="w-2 h-2 rounded-full bg-black" />}
+                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
               </div>
             </button>
           );

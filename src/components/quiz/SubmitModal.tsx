@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { QuizQuestion, UserResponse } from '@/types/aisat';
-import { AlertCircle, ArrowRight, CheckCircle2, X } from 'lucide-react';
+import { AlertCircle, X, ArrowRight } from 'lucide-react';
 
 interface SubmitModalProps {
   isOpen: boolean;
@@ -40,59 +40,52 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="w-full max-w-md bg-[#0E131F] border border-amber-500/30 rounded-2xl shadow-2xl shadow-amber-500/10 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden">
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-b border-white/[0.08] p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/20 text-amber-400">
-              <AlertCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="font-extrabold text-base text-white">Submit Assessment?</h3>
-              <p className="text-xs text-slate-400">Review your attempt summary before final submission.</p>
-            </div>
+        <div className="bg-gray-50 border-b border-gray-100 p-5 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-gray-900" />
+            <h3 className="font-extrabold text-base text-gray-950">Submit Assessment?</h3>
           </div>
-          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded-lg">
+          <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-900 rounded">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Content Summary */}
+        {/* Content */}
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-              <div className="text-xl font-black text-white">{questions.length}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Total</div>
+            <div className="p-3 rounded-lg bg-gray-50 border border-gray-200">
+              <div className="text-xl font-black text-gray-950">{questions.length}</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">Total</div>
             </div>
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-              <div className="text-xl font-black text-emerald-400">{answeredCount}</div>
-              <div className="text-[11px] text-emerald-300 mt-0.5">Answered</div>
+            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+              <div className="text-xl font-black text-emerald-800">{answeredCount}</div>
+              <div className="text-[11px] text-emerald-700 mt-0.5">Answered</div>
             </div>
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <div className="text-xl font-black text-amber-400">{unansweredCount}</div>
-              <div className="text-[11px] text-amber-300 mt-0.5">Left</div>
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+              <div className="text-xl font-black text-amber-900">{unansweredCount}</div>
+              <div className="text-[11px] text-amber-700 mt-0.5">Unanswered</div>
             </div>
           </div>
 
           {markedCount > 0 && (
-            <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-              <span>You have <strong>{markedCount} question(s)</strong> marked for review.</span>
+            <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 text-xs">
+              You have <strong>{markedCount} question(s)</strong> marked for review.
             </div>
           )}
 
-          <p className="text-xs text-slate-400 leading-relaxed text-center">
-            Once submitted, your responses will be locked and sent for algorithmic grading.
+          <p className="text-xs text-gray-500 text-center">
+            Are you sure you want to end this test session? Your answers will be submitted.
           </p>
 
-          {/* Action Buttons */}
           <div className="flex items-center gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.1] text-xs font-bold text-slate-300 hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="w-1/2 py-2.5 rounded-lg bg-gray-100 text-xs font-bold text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
             >
               Back to Test
             </button>
@@ -100,13 +93,13 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
               type="button"
               onClick={onConfirmSubmit}
               disabled={isSubmitting}
-              className="w-1/2 btn-primary-gradient py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-amber-500/25 disabled:opacity-50"
+              className="w-1/2 btn-capabl py-2.5 rounded-lg text-xs font-bold text-black flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Submitting...</span>
               ) : (
                 <>
-                  <span>Confirm Submit</span>
+                  <span>Submit Test</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
