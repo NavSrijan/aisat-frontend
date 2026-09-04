@@ -1,18 +1,14 @@
 import React from 'react';
-import { School, Award } from 'lucide-react';
 
 export const CollegesSection: React.FC = () => {
   const colleges = [
-    'IIT Madras',
-    'IIT Kanpur',
-    'BITS Pilani',
-    'NIT Trichy',
-    'DTU Delhi',
-    'VIT Vellore',
-    'Manipal Institute of Tech',
-    'JNTU Hyderabad',
-    'Osmania University',
-    'VTU Karnataka',
+    { name: 'Osmania Uni', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7bef5_osmania_uni_logo%20(1).avif' },
+    { name: 'BITS', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7bef3_bits_logo.avif' },
+    { name: 'Andhra Uni', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7befb_andhra_uni_logo.avif' },
+    { name: 'JNTU', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7bef7_jntu_logo.avif' },
+    { name: 'IIT Madras', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7beff_iit_madras_logo.avif' },
+    { name: 'IIT Kanpur', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/699818493036b79ea9738ecf_IIT%20Kanpur.avif' },
+    { name: 'VTU', src: 'https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/673c546e0f325d428ca7bef9_vtu_logo.avif' },
   ];
 
   return (
@@ -24,21 +20,26 @@ export const CollegesSection: React.FC = () => {
             
             <div className="lg:col-span-5 space-y-3">
               <h3 className="text-2xl font-extrabold text-gray-950 tracking-tight">
-                Present across 800+ <span className="yellow-underline">Colleges</span> & Universities
+                Present across 400+ <span className="yellow-underline">Colleges</span> & Universities
               </h3>
               <p className="text-sm text-gray-600 leading-relaxed">
-                Students and teams from premier technological institutions across India participate in the AISAT benchmark.
+                Students from premier technological institutions across India participate in the AISAT benchmark.
               </p>
             </div>
 
             <div className="lg:col-span-7">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {colleges.map((college, idx) => (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {colleges.map((c, idx) => (
                   <div
                     key={idx}
-                    className="bg-white rounded-lg border border-gray-200 px-3.5 py-3 text-center shadow-2xs hover:border-gray-300 transition-all"
+                    className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center justify-center gap-2 shadow-2xs hover:border-gray-300 transition-all text-center"
                   >
-                    <span className="text-xs font-bold text-gray-800">{college}</span>
+                    <img
+                      src={c.src}
+                      alt={c.name}
+                      className="h-12 w-auto max-w-[80px] object-contain"
+                    />
+                    <span className="text-[11px] font-bold text-gray-700">{c.name}</span>
                   </div>
                 ))}
               </div>

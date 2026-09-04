@@ -1,5 +1,4 @@
 import React from 'react';
-import Link from 'next/link';
 
 export const Footer: React.FC = () => {
   return (
@@ -20,15 +19,12 @@ export const Footer: React.FC = () => {
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           {/* Logo */}
           <div className="space-y-1">
-            <div className="flex items-center">
-              <span className="text-xl font-black tracking-tight text-white">
-                Capa
-              </span>
-              <span className="text-xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">
-                bl.
-              </span>
-            </div>
-            <div className="text-[11px] text-gray-500">
+            <img
+              src="https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/66afee391f29c527ad2c2ada_Capabl%20TM%20logo-p-500.avif"
+              alt="Capabl Logo"
+              className="h-8 w-auto object-contain brightness-0 invert"
+            />
+            <div className="text-[11px] text-gray-500 pt-1">
               Engineered with <span className="text-red-500">❤️</span> by Capabl
             </div>
           </div>

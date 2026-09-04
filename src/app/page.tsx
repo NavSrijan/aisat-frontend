@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { StatsBanner } from '@/components/landing/StatsBanner';
+import { IndustrySection } from '@/components/landing/IndustrySection';
 import { TestPatternSection } from '@/components/landing/TestPatternSection';
 import { CollegesSection } from '@/components/landing/CollegesSection';
 import { FAQSection } from '@/components/landing/FAQSection';
@@ -22,6 +23,7 @@ export default function LandingPage() {
       <main className="flex-1">
         <HeroSection onOpenRegister={() => setIsRegisterOpen(true)} />
         <StatsBanner />
+        <IndustrySection />
         <TestPatternSection />
         <CollegesSection />
         <FAQSection />

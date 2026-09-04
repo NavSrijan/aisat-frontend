@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 
 interface NavbarProps {
@@ -10,21 +11,18 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-xs">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-2xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
-        {/* Capabl Logo matching real site */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex items-center">
-            <span className="text-2xl font-black tracking-tight text-gray-950">
-              Capa
-            </span>
-            <span className="text-2xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">
-              bl.
-            </span>
-          </div>
-          <span className="hidden sm:inline-block ml-3 px-2 py-0.5 text-xs font-bold text-gray-600 bg-gray-100 rounded-md">
-            AISAT
+        {/* Real Capabl Brand Logo */}
+        <Link href="/" className="flex items-center gap-3">
+          <img
+            src="https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/66afee391f29c527ad2c2ada_Capabl%20TM%20logo-p-500.avif"
+            alt="Capabl Logo"
+            className="h-9 w-auto object-contain"
+          />
+          <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-bold text-gray-700 bg-gray-100 rounded-md">
+            AISAT 2026
           </span>
         </Link>
 
@@ -33,11 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRegister }) => {
           <a href="#test-details" className="hover:text-black transition-colors">
             Test Format
           </a>
-          <a href="#syllabus" className="hover:text-black transition-colors">
-            Syllabus
-          </a>
           <a href="#colleges" className="hover:text-black transition-colors">
-            Colleges
+            Partner Colleges
           </a>
           <a href="#faqs" className="hover:text-black transition-colors">
             FAQs
