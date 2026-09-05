@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, ArrowRight, Home } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Home, Award, BarChart2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function TestCompletedPage() {
@@ -27,23 +27,23 @@ export default function TestCompletedPage() {
   }, []);
 
   const candidate = submission?.candidate;
+  const result = submission?.result;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 py-4 shadow-2xs">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="text-xl font-black tracking-tight text-gray-950">
-              Capa
+          <Link href="/" className="flex items-center gap-2.5">
+            <img
+              src="https://cdn.prod.website-files.com/66af61f906e2326d3e3183a1/66afee391f29c527ad2c2ada_Capabl%20TM%20logo-p-500.avif"
+              alt="Capabl Logo"
+              className="h-8 w-auto object-contain"
+            />
+            <span className="hidden sm:inline-block px-2 py-0.5 text-xs font-bold text-gray-700 bg-gray-100 rounded-md">
+              AISAT 2026
             </span>
-            <span className="text-xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">
-              bl.
-            </span>
-            <span className="ml-2 text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
-              AISAT
-            </span>
-          </div>
+          </Link>
           <Link
             href="/"
             className="text-xs text-gray-600 hover:text-black flex items-center gap-1 font-medium transition-colors"
@@ -65,8 +65,38 @@ export default function TestCompletedPage() {
           Assessment Submitted Successfully
         </h1>
         <p className="text-sm text-gray-600 mb-8">
-          Your answers and basic details have been recorded.
+          Your answers and submission have been recorded directly on the server.
         </p>
+
+        {/* Backend Score Card if returned */}
+        {result && (
+          <div className="w-full bg-white rounded-xl p-6 border border-gray-200 shadow-xs text-left mb-6">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <Award className="w-5 h-5 text-[#FFC700]" />
+                <span className="text-sm font-bold text-gray-950">Result Summary</span>
+              </div>
+              <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700">
+                {result.attempt?.status || 'SUBMITTED'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="text-xs text-gray-500 font-medium">Score Earned</div>
+                <div className="text-xl font-black text-gray-950 mt-0.5">
+                  {result.summary?.earnedPoints ?? result.score ?? '—'} / {result.summary?.maxScore ?? result.maxScore ?? '—'}
+                </div>
+              </div>
+              <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <div className="text-xs text-gray-500 font-medium">Percentage</div>
+                <div className="text-xl font-black text-emerald-600 mt-0.5">
+                  {result.summary?.percentage !== undefined ? `${result.summary.percentage}%` : 'Recorded'}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {candidate && (
           <div className="w-full bg-white rounded-xl p-6 border border-gray-200 shadow-xs text-left mb-8">
@@ -84,13 +114,16 @@ export default function TestCompletedPage() {
               <div><span className="font-semibold text-gray-700">Email:</span> {candidate.email}</div>
               <div><span className="font-semibold text-gray-700">Phone:</span> {candidate.phoneNumber}</div>
               <div><span className="font-semibold text-gray-700">College:</span> {candidate.college} ({candidate.branch})</div>
+              {candidate.rollNumber && (
+                <div><span className="font-semibold text-gray-700">Roll Number:</span> {candidate.rollNumber}</div>
+              )}
             </div>
           </div>
         )}
 
         <Link
           href="/"
-          className="btn-capabl px-6 py-3 rounded-lg font-bold text-sm text-black flex items-center gap-2 shadow-xs cursor-pointer"
+          className="btn-capabl-yellow px-6 py-3 rounded-lg font-bold text-sm text-black flex items-center gap-2 shadow-xs cursor-pointer"
         >
           <span>Return to Home</span>
           <ArrowRight className="w-4 h-4" />

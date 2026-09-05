@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/landing/HeroSection';
-import { StatsBanner } from '@/components/landing/StatsBanner';
 import { IndustrySection } from '@/components/landing/IndustrySection';
 import { TestPatternSection } from '@/components/landing/TestPatternSection';
 import { CollegesSection } from '@/components/landing/CollegesSection';
@@ -15,14 +14,13 @@ export default function LandingPage() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+    <div className="min-h-screen flex flex-col bg-white text-gray-900 font-sans">
       {/* Navigation */}
       <Navbar onOpenRegister={() => setIsRegisterOpen(true)} />
 
       {/* Main Content */}
       <main className="flex-1">
         <HeroSection onOpenRegister={() => setIsRegisterOpen(true)} />
-        <StatsBanner />
         <IndustrySection />
         <TestPatternSection />
         <CollegesSection />

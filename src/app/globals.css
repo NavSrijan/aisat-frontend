@@ -2,78 +2,120 @@
 
 @layer base {
   :root {
-    --brand-yellow: #FFC700;
-    --brand-yellow-hover: #E5B300;
-    --brand-dark: #0F172A;
-    --brand-navy: #060B1A;
+    --brand-yellow: #fc0;
+    --brand-yellow-hover: #e6b800;
+    --brand-navy: #011c40;
+    --brand-red: #eb353a;
   }
 }
 
 body {
   background-color: #FFFFFF;
-  color: #1E293B;
-  font-family: var(--font-poppins), 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #000000;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+/* Exact Capabl Typography */
+.capabl-hero-heading {
   font-family: var(--font-poppins), 'Poppins', sans-serif;
-  letter-spacing: -0.02em;
-}
-
-/* Capabl Yellow Accent Line */
-.yellow-underline {
-  position: relative;
-  display: inline-block;
-}
-
-.yellow-underline::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -4px;
-  width: 100%;
-  height: 4px;
-  background-color: #FFC700;
-  border-radius: 2px;
-}
-
-/* Capabl button */
-.btn-capabl {
-  background-color: #FFC700;
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 50px;
   color: #000000;
-  font-weight: 700;
-  transition: all 0.2s ease;
+  letter-spacing: -0.01em;
 }
 
-.btn-capabl:hover {
-  background-color: #E5B300;
+@media (max-width: 768px) {
+  .capabl-hero-heading {
+    font-size: 28px;
+    line-height: 36px;
+  }
+}
+
+.capabl-subtext {
+  color: #6c6c6c;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+/* Exact Capabl Yellow Button */
+.btn-capabl,
+.btn-capabl-yellow {
+  background-color: #fc0;
+  color: #000000;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 24px;
+  min-height: 42px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.01em;
+  border: none;
+}
+
+.btn-capabl:hover,
+.btn-capabl-yellow:hover {
+  background-color: #e6b800;
   transform: translateY(-1px);
 }
 
-.btn-capabl-outline {
-  border: 1.5px solid #1E293B;
-  color: #1E293B;
-  font-weight: 600;
+.btn-capabl:active,
+.btn-capabl-yellow:active {
+  transform: translateY(0);
+}
+
+/* Exact Capabl Red Outline Button */
+.btn-capabl-red-outline {
+  color: #eb353a;
+  background-color: #ffffff;
+  border: 1px solid #eb353a;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 12px 32px;
+  min-height: 48px;
   transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: -0.02em;
 }
 
-.btn-capabl-outline:hover {
-  background-color: #F8FAFC;
-  border-color: #000000;
+.btn-capabl-red-outline:hover {
+  background-color: #f3f5fb;
+  transform: scale(0.98);
 }
 
-/* Clean cards */
-.capabl-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+/* Exact Capabl Stats Box (quick-stack-9) */
+.capabl-stats-box {
+  background-color: #f2f4f7;
+  border: 3px solid #fc0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 12px 2px rgba(0, 0, 0, 0.07);
 }
 
-.capabl-card:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+.capabl-stat-number {
+  color: #011c40;
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.capabl-stat-label {
+  font-family: var(--font-poppins), 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #4b5563;
+  line-height: 18px;
 }

@@ -12,6 +12,7 @@ export interface CandidateLead {
   email: string;
   phoneNumber: string;
   college: string;
+  rollNumber?: string;
   branch: string;
   graduationYear: string;
   targetDomain: string;
@@ -45,6 +46,7 @@ export interface QuizQuestion {
   codeSnippet?: string;
   language?: string;
   marks: number;
+  isUnscored?: boolean;
   negativeMarks?: number;
   options?: QuestionOption[];
   matchPairs?: {
@@ -57,6 +59,12 @@ export interface QuizQuestion {
   starterCode?: Record<string, string>;
   testCases?: TestCase[];
   explanationHint?: string;
+  timeLimitSec?: number | null;
+  comp?: string;
+  tier?: string;
+  context?: string;
+  transcript?: string;
+  itemVersionId?: string;
 }
 
 export interface QuizSection {

@@ -16,17 +16,20 @@ export const ShortAnswerRenderer: React.FC<ShortAnswerRendererProps> = ({ questi
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between text-xs text-gray-500">
-        <span className="font-semibold">Type your answer:</span>
-        <span className="font-mono">{wordCount} words</span>
+        <span className="font-semibold">Type your response:</span>
+        <span className="font-mono text-gray-400">{wordCount} words</span>
       </div>
 
       <textarea
         rows={5}
-        placeholder="Type your explanation clearly..."
+        placeholder="Write your explanation or diagnosis here..."
         value={currentText}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-3.5 rounded-xl bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FFC700] focus:ring-1 focus:ring-[#FFC700] leading-relaxed"
+        className="w-full p-4 rounded-xl bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FFC700] focus:ring-1 focus:ring-[#FFC700] leading-relaxed resize-y"
       />
+      <div className="text-xs text-gray-500 italic">
+        Blank or "N/A" is a valid answer. Two to three sentences is enough.
+      </div>
     </div>
   );
 };

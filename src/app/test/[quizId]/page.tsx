@@ -4,6 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { SAMPLE_AISAT_QUIZ } from '@/lib/quizData';
 import { CandidateLead, QuizQuestion, UserResponse } from '@/types/aisat';
+import { aisatApi } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';
 import { QuestionPalette } from '@/components/quiz/QuestionPalette';
 import { SubmitModal } from '@/components/quiz/SubmitModal';
@@ -22,7 +23,79 @@ import {
   ChevronRight,
   Bookmark,
   RotateCcw,
+  Sparkles,
 } from 'lucide-react';
+
+// Helper to format frontend state to backend AnswerPayload schema
+function formatAnswerForBackend(type: string, rawAnswer: any): any {
+  if (rawAnswer === null || rawAnswer === undefined || rawAnswer === '') {
+    return { unattempted: true };
+  }
+
+  switch (type) {
+    case 'MCQ_SINGLE':
+      return {
+        optionIds: typeof rawAnswer === 'string' ? [rawAnswer] : Array.isArray(rawAnswer) ? rawAnswer : [String(rawAnswer)],
+      };
+    case 'MCQ_MULTI':
+      return {
+        optionIds: Array.isArray(rawAnswer) ? rawAnswer : [String(rawAnswer)],
+      };
+    case 'FILL_IN_BLANKS':
+      if (typeof rawAnswer === 'object' && !Array.isArray(rawAnswer)) {
+        return { blanks: rawAnswer };
+      }
+      return { blanks: { '0': String(rawAnswer) } };
+    case 'NUMERIC':
+      const num = typeof rawAnswer === 'number' ? rawAnswer : parseFloat(String(rawAnswer));
+      return { value: isNaN(num) ? 0 : num };
+    case 'MATCH_COLUMNS':
+      if (typeof rawAnswer === 'object' && !Array.isArray(rawAnswer)) {
+        const pairs = Object.entries(rawAnswer).map(([leftId, rightId]) => ({
+          leftId,
+          rightId: String(rightId),
+        }));
+        return { pairs };
+      }
+      return { pairs: [] };
+    case 'SHORT_ANSWER':
+      return { text: String(rawAnswer) };
+    case 'CODING_CHALLENGE':
+      return { code: String(rawAnswer), language: 'python' };
+    default:
+      return typeof rawAnswer === 'object' ? rawAnswer : { value: rawAnswer };
+  }
+}
+
+// Helper to extract frontend state from backend AnswerPayload
+function parseAnswerFromBackend(type: string, backendAnswer: any): any {
+  if (!backendAnswer || backendAnswer.unattempted) return null;
+  switch (type) {
+    case 'MCQ_SINGLE':
+      return backendAnswer.optionIds?.[0] ?? null;
+    case 'MCQ_MULTI':
+      return backendAnswer.optionIds ?? [];
+    case 'FILL_IN_BLANKS':
+      return backendAnswer.blanks ?? null;
+    case 'NUMERIC':
+      return backendAnswer.value ?? null;
+    case 'MATCH_COLUMNS':
+      if (Array.isArray(backendAnswer.pairs)) {
+        const pairsObj: Record<string, string> = {};
+        backendAnswer.pairs.forEach((p: any) => {
+          if (p?.leftId && p?.rightId) pairsObj[p.leftId] = p.rightId;
+        });
+        return pairsObj;
+      }
+      return backendAnswer.pairs ?? null;
+    case 'SHORT_ANSWER':
+      return backendAnswer.text ?? null;
+    case 'CODING_CHALLENGE':
+      return backendAnswer.code ?? null;
+    default:
+      return backendAnswer;
+  }
+}
 
 interface PageProps {
   params: Promise<{ quizId: string }>;
@@ -34,6 +107,8 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const quiz = SAMPLE_AISAT_QUIZ;
 
   const [candidate, setCandidate] = useState<CandidateLead | null>(null);
+  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [questions, setQuestions] = useState<QuizQuestion[]>(SAMPLE_AISAT_QUIZ.questions);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, UserResponse>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -41,17 +116,85 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('aisat_candidate');
-    if (raw) {
-      try {
-        setCandidate(JSON.parse(raw));
-      } catch (e) {
-        console.error('Failed to parse candidate data', e);
-      }
-    }
-  }, []);
+    let isMounted = true;
 
-  const currentQuestion: QuizQuestion = quiz.questions[currentIndex] || quiz.questions[0];
+    const initAttempt = async () => {
+      const rawCandidate = sessionStorage.getItem('aisat_candidate');
+      if (rawCandidate) {
+        try {
+          setCandidate(JSON.parse(rawCandidate));
+        } catch (e) {
+          console.error('Failed to parse candidate data', e);
+        }
+      }
+
+      const paramId = resolvedParams.quizId;
+      const targetQuizId =
+        paramId && paramId.includes('-') && paramId.length === 36
+          ? paramId
+          : 'a15a7000-0000-4000-8000-000000000001';
+
+      const token = aisatApi.getToken();
+      if (!token) {
+        // Must register with OTP first
+        router.push('/');
+        return;
+      }
+
+      try {
+        const attemptRes = await aisatApi.startAttempt(targetQuizId);
+        if (!isMounted) return;
+
+        if (attemptRes?.data?.attempt) {
+          setAttemptId(attemptRes.data.attempt.attemptId);
+
+          if (attemptRes.data.items && attemptRes.data.items.length > 0) {
+            const backendItems = attemptRes.data.items;
+            const mergedQuestions = SAMPLE_AISAT_QUIZ.questions.map((q, idx) => {
+              const bItem = backendItems[idx];
+              if (!bItem) return q;
+              return {
+                ...q,
+                itemVersionId: bItem.itemVersionId,
+                options: bItem.options && bItem.options.length > 0 ? bItem.options : q.options,
+              };
+            });
+            setQuestions(mergedQuestions);
+
+            // Restore drafts if resuming attempt
+            const restored: Record<string, UserResponse> = {};
+            backendItems.forEach((bItem, idx) => {
+              const q = mergedQuestions[idx];
+              if (bItem.savedAnswer !== undefined && bItem.savedAnswer !== null) {
+                const parsed = parseAnswerFromBackend(q.type, bItem.savedAnswer);
+                if (parsed !== null) {
+                  restored[q.id] = {
+                    questionId: q.id,
+                    type: q.type,
+                    answer: parsed,
+                    isMarkedForReview: false,
+                    timeSpentSeconds: 15,
+                  };
+                }
+              }
+            });
+            if (Object.keys(restored).length > 0) {
+              setResponses((prev) => ({ ...restored, ...prev }));
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Backend startAttempt error:', err);
+      }
+    };
+
+    initAttempt();
+    return () => {
+      isMounted = false;
+    };
+  }, [resolvedParams.quizId]);
+
+  const currentQuestion: QuizQuestion = questions[currentIndex] || questions[0];
   const activeSectionId = currentQuestion.sectionId;
 
   const currentResponse = responses[currentQuestion.id] || {
@@ -62,7 +205,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
     timeSpentSeconds: 0,
   };
 
-  const handleAnswerChange = (answer: any) => {
+  const handleAnswerChange = async (answer: any) => {
     setIsSaving(true);
     const updated: UserResponse = {
       ...currentResponse,
@@ -77,9 +220,18 @@ export default function QuizPlayerPage({ params }: PageProps) {
     setResponses(newResponses);
     sessionStorage.setItem('aisat_responses', JSON.stringify(newResponses));
 
+    if (attemptId && currentQuestion.itemVersionId) {
+      try {
+        const formatted = formatAnswerForBackend(currentQuestion.type, answer);
+        await aisatApi.saveResponse(attemptId, currentQuestion.itemVersionId, formatted, updated.timeSpentSeconds || 15);
+      } catch (e) {
+        console.warn('Background response save error:', e);
+      }
+    }
+
     setTimeout(() => {
       setIsSaving(false);
-    }, 400);
+    }, 300);
   };
 
   const handleToggleMarkForReview = () => {
@@ -104,8 +256,77 @@ export default function QuizPlayerPage({ params }: PageProps) {
     });
   };
 
+  const handleAutofillAllAnswers = async () => {
+    const autofilled: Record<string, UserResponse> = {};
+    const now = new Date().toISOString();
+
+    questions.forEach((q, idx) => {
+      let sampleAnswer: any = null;
+
+      if (q.type === 'MCQ_SINGLE' && q.options && q.options.length > 0) {
+        const pickIdx = idx % q.options.length;
+        sampleAnswer = q.options[pickIdx].id;
+      } else if (q.type === 'MCQ_MULTI' && q.options && q.options.length > 0) {
+        if (q.options.length >= 2) {
+          sampleAnswer = [q.options[0].id, q.options[1].id];
+        } else {
+          sampleAnswer = [q.options[0].id];
+        }
+      } else if (q.type === 'FILL_IN_BLANKS') {
+        sampleAnswer = q.options?.[0]?.text || 'temperature';
+      } else if (q.type === 'NUMERIC') {
+        sampleAnswer = 42;
+      } else if (q.type === 'MATCH_COLUMNS' && q.matchPairs) {
+        const pairs: Record<string, string> = {};
+        const lefts = q.matchPairs.leftItems || [];
+        const rights = q.matchPairs.rightItems || [];
+        lefts.forEach((l, i) => {
+          if (rights[i]) {
+            pairs[l.id] = rights[i].id;
+          }
+        });
+        sampleAnswer = pairs;
+      } else if (q.type === 'SHORT_ANSWER') {
+        sampleAnswer = 'The agent loop fails to check tool schema validity before dispatching calls, leading to unbounded retry cycles without context rollback.';
+      } else if (q.type === 'CODING_CHALLENGE') {
+        sampleAnswer = `def optimize_agent_latency(steps):\n    # Filter redundant tool invocations\n    seen = set()\n    optimized = []\n    for step in steps:\n        if step.signature not in seen:\n            seen.add(step.signature)\n            optimized.append(step)\n    return optimized`;
+      } else {
+        sampleAnswer = q.options?.[0]?.id || 'Valid response';
+      }
+
+      autofilled[q.id] = {
+        questionId: q.id,
+        type: q.type,
+        answer: sampleAnswer,
+        isMarkedForReview: idx % 8 === 0,
+        timeSpentSeconds: 20,
+        lastSavedAt: now,
+      };
+    });
+
+    setResponses(autofilled);
+    sessionStorage.setItem('aisat_responses', JSON.stringify(autofilled));
+
+    if (attemptId) {
+      setIsSaving(true);
+      try {
+        const savePromises = questions
+          .filter((q) => q.itemVersionId && autofilled[q.id]?.answer !== null)
+          .map((q) => {
+            const formatted = formatAnswerForBackend(q.type, autofilled[q.id].answer);
+            return aisatApi.saveResponse(attemptId, q.itemVersionId!, formatted, 20);
+          });
+        await Promise.allSettled(savePromises);
+      } catch (e) {
+        console.warn('Batch autosave error:', e);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
   const handleNext = () => {
-    if (currentIndex < quiz.questions.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -117,27 +338,68 @@ export default function QuizPlayerPage({ params }: PageProps) {
   };
 
   const handleSelectSection = (sectionId: string) => {
-    const targetIdx = quiz.questions.findIndex((q) => q.sectionId === sectionId);
+    const targetIdx = questions.findIndex((q) => q.sectionId === sectionId);
     if (targetIdx !== -1) {
       setCurrentIndex(targetIdx);
     }
   };
 
-  const handleConfirmSubmit = () => {
+  const handleConfirmSubmit = async () => {
     setIsSubmitting(true);
-    const submissionPayload = {
-      quizId: quiz.id,
-      candidate,
-      responses,
-      submittedAt: new Date().toISOString(),
-    };
-    sessionStorage.setItem('aisat_final_submission', JSON.stringify(submissionPayload));
+    const paramId = resolvedParams.quizId;
+    const targetQuizId =
+      paramId && paramId.includes('-') && paramId.length === 36
+        ? paramId
+        : 'a15a7000-0000-4000-8000-000000000001';
 
-    setTimeout(() => {
+    let backendResult: any = null;
+
+    try {
+      if (attemptId) {
+        const answersPayload = questions
+          .filter((q) => !!q.itemVersionId)
+          .map((q) => {
+            const r = responses[q.id];
+            const formatted = formatAnswerForBackend(q.type, r?.answer);
+            return {
+              itemVersionId: q.itemVersionId!,
+              answer: formatted,
+              timeSpentSec: r?.timeSpentSeconds || 15,
+            };
+          });
+
+        const submitRes = await aisatApi.submitAttempt(attemptId, answersPayload);
+        backendResult = submitRes.data;
+      }
+
+      const submissionPayload = {
+        quizId: targetQuizId,
+        attemptId,
+        candidate,
+        result: backendResult,
+        responses,
+        submittedAt: new Date().toISOString(),
+      };
+      sessionStorage.setItem('aisat_final_submission', JSON.stringify(submissionPayload));
+
       setIsSubmitting(false);
       setIsSubmitModalOpen(false);
       router.push('/test/completed');
-    }, 800);
+    } catch (err: any) {
+      console.error('Failed to submit attempt to backend:', err);
+      const fallbackPayload = {
+        quizId: targetQuizId,
+        attemptId,
+        candidate,
+        responses,
+        submittedAt: new Date().toISOString(),
+        error: err?.message,
+      };
+      sessionStorage.setItem('aisat_final_submission', JSON.stringify(fallbackPayload));
+      setIsSubmitting(false);
+      setIsSubmitModalOpen(false);
+      router.push('/test/completed');
+    }
   };
 
   const renderInteractionWidget = () => {
@@ -203,8 +465,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
     }
   };
 
+  const answeredCount = Object.values(responses).filter(
+    (r) => r.answer !== null && r.answer !== '' && (!Array.isArray(r.answer) || r.answer.length > 0)
+  ).length;
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] text-gray-900">
+    <div className="min-h-screen flex flex-col bg-[#F4F6F9] text-gray-900">
       {/* Quiz Sticky Header */}
       <QuizHeader
         title={quiz.title}
@@ -215,6 +481,9 @@ export default function QuizPlayerPage({ params }: PageProps) {
         onTimeExpired={() => setIsSubmitModalOpen(true)}
         onSubmitClick={() => setIsSubmitModalOpen(true)}
         isSaving={isSaving}
+        candidate={candidate}
+        answeredCount={answeredCount}
+        totalQuestions={questions.length}
       />
 
       {/* Main Arena */}
@@ -227,11 +496,21 @@ export default function QuizPlayerPage({ params }: PageProps) {
               
               {/* Question Header */}
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-6">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2.5 py-1 rounded-md bg-[#FFC700] text-gray-950 font-bold text-xs">
-                    Question {currentIndex + 1} of {quiz.questions.length}
+                    Question {currentIndex + 1} of {questions.length}
                   </span>
-                  <span className="text-xs text-gray-500 font-semibold">
+                  {currentQuestion.comp && (
+                    <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-800 font-semibold text-xs border border-gray-200">
+                      {currentQuestion.comp}
+                    </span>
+                  )}
+                  {currentQuestion.tier && (
+                    <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-600 font-medium text-xs border border-gray-200">
+                      {currentQuestion.tier}
+                    </span>
+                  )}
+                  <span className="text-xs text-gray-400 font-medium">
                     {currentQuestion.type.replace(/_/g, ' ')}
                   </span>
                 </div>
@@ -248,12 +527,35 @@ export default function QuizPlayerPage({ params }: PageProps) {
                 </div>
               </div>
 
+              {/* Shared Section Transcript (e.g. Section D) */}
+              {currentQuestion.transcript && (
+                <div className="mb-6 space-y-2">
+                  <div className="text-xs font-bold uppercase tracking-wider text-gray-600">
+                    Execution Log Transcript
+                  </div>
+                  <pre className="p-4 rounded-xl bg-gray-900 text-amber-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap overflow-x-auto border border-gray-800">
+                    {currentQuestion.transcript}
+                  </pre>
+                  <div className="text-[11px] text-gray-400 italic">
+                    Note: Transcript stays the same across questions in this section.
+                  </div>
+                </div>
+              )}
+
+              {/* Question Context (e.g. Section C) */}
+              {currentQuestion.context && (
+                <div className="mb-6 p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs sm:text-sm text-amber-950 leading-relaxed">
+                  <span className="font-bold block mb-1">Scenario Context:</span>
+                  {currentQuestion.context}
+                </div>
+              )}
+
               {/* Question Prompt */}
               <div className="space-y-3 mb-6">
                 <h3 className="font-bold text-base text-gray-900 leading-snug">
                   {currentQuestion.title}
                 </h3>
-                <div className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-line">
+                <div className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-line font-medium">
                   {currentQuestion.prompt}
                 </div>
               </div>
@@ -285,6 +587,16 @@ export default function QuizPlayerPage({ params }: PageProps) {
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
+
+                  <button
+                    onClick={handleAutofillAllAnswers}
+                    className="px-3 py-2 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition-colors cursor-pointer flex items-center gap-1.5"
+                    title="Demo: Autofill all 40 questions with sample answers"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                    <span className="hidden sm:inline">Demo: Fill All Answers</span>
+                    <span className="sm:hidden">Fill All</span>
+                  </button>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -299,7 +611,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
                   <button
                     onClick={handleNext}
-                    disabled={currentIndex === quiz.questions.length - 1}
+                    disabled={currentIndex === questions.length - 1}
                     className="btn-capabl px-5 py-2 rounded-lg text-xs font-bold text-black flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
                   >
                     <span>Save & Next</span>
@@ -320,7 +632,9 @@ export default function QuizPlayerPage({ params }: PageProps) {
                   Candidate
                 </div>
                 <div className="font-extrabold text-base text-gray-950">{candidate.name}</div>
-                <div className="text-xs text-gray-500 truncate mt-0.5">{candidate.college}</div>
+                <div className="text-xs text-gray-500 truncate mt-0.5">
+                  {candidate.college}{candidate.rollNumber ? ` • Roll: ${candidate.rollNumber}` : ''}
+                </div>
                 <div className="text-xs text-gray-500 mt-1">
                   {candidate.branch} • Class of {candidate.graduationYear}
                 </div>
@@ -328,10 +642,11 @@ export default function QuizPlayerPage({ params }: PageProps) {
             )}
 
             <QuestionPalette
-              questions={quiz.questions}
+              questions={questions}
               currentIndex={currentIndex}
               onSelectIndex={(idx) => setCurrentIndex(idx)}
               responses={responses}
+              onAutofillAll={handleAutofillAllAnswers}
             />
           </div>
 
@@ -342,7 +657,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
         isOpen={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
         onConfirmSubmit={handleConfirmSubmit}
-        questions={quiz.questions}
+        questions={questions}
         responses={responses}
         isSubmitting={isSubmitting}
       />
