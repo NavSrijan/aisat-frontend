@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { QuizSection, CandidateLead } from '@/types/aisat';
 import {
   Clock,
+  Globe,
   CheckCircle2,
   Layers,
 } from 'lucide-react';
@@ -15,6 +16,9 @@ interface QuizHeaderProps {
   activeSectionId: string;
   onSelectSection: (sectionId: string) => void;
   durationMinutes: number;
+  serverDeadlineAt?: string | null;
+  serverRemainingSec?: number | null;
+  timerType?: 'PER_STUDENT' | 'GLOBAL';
   onTimeExpired: () => void;
   onSubmitClick: () => void;
   isSaving: boolean;
@@ -29,6 +33,9 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
   activeSectionId,
   onSelectSection,
   durationMinutes,
+  serverDeadlineAt,
+  serverRemainingSec,
+  timerType,
   onTimeExpired,
   onSubmitClick,
   isSaving,
@@ -36,22 +43,54 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
   answeredCount = 0,
   totalQuestions = 40,
 }) => {
-  const [secondsRemaining, setSecondsRemaining] = useState(durationMinutes * 60);
+  const computeRemaining = () => {
+    if (serverDeadlineAt) {
+      const diff = Math.ceil((new Date(serverDeadlineAt).getTime() - Date.now()) / 1000);
+      return Math.max(0, diff);
+    }
+    if (serverRemainingSec !== undefined && serverRemainingSec !== null) {
+      return serverRemainingSec;
+    }
+    return durationMinutes * 60;
+  };
+
+  const [secondsRemaining, setSecondsRemaining] = useState(computeRemaining());
+  const secondsRemainingRef = React.useRef(secondsRemaining);
+  const hasExpiredRef = React.useRef(false);
+  const onTimeExpiredRef = React.useRef(onTimeExpired);
+
+  useEffect(() => {
+    onTimeExpiredRef.current = onTimeExpired;
+  }, [onTimeExpired]);
+
+  useEffect(() => {
+    const rem = computeRemaining();
+    secondsRemainingRef.current = rem;
+    setSecondsRemaining(rem);
+  }, [serverDeadlineAt, serverRemainingSec, durationMinutes]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setSecondsRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onTimeExpired();
-          return 0;
+      let current: number;
+      if (serverDeadlineAt) {
+        current = Math.max(0, Math.ceil((new Date(serverDeadlineAt).getTime() - Date.now()) / 1000));
+      } else {
+        current = Math.max(0, secondsRemainingRef.current - 1);
+      }
+      secondsRemainingRef.current = current;
+      setSecondsRemaining(current);
+
+      if (current <= 0) {
+        clearInterval(timer);
+        if (!hasExpiredRef.current) {
+          hasExpiredRef.current = true;
+          onTimeExpiredRef.current();
         }
-        return prev - 1;
-      });
+      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [durationMinutes, onTimeExpired]);
+  }, [serverDeadlineAt]);
 
   const formatTime = (totalSecs: number) => {
     const hours = Math.floor(totalSecs / 3600);
@@ -137,8 +176,17 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
               }`}
               title="Time Remaining"
             >
-              <Clock className="w-4 h-4 text-[#FFCC00]" />
+              {timerType === 'GLOBAL' ? (
+                <Globe className="w-4 h-4 text-[#FFCC00]" />
+              ) : (
+                <Clock className="w-4 h-4 text-[#FFCC00]" />
+              )}
               <span>{formatTime(secondsRemaining)}</span>
+              {timerType === 'GLOBAL' && (
+                <span className="hidden md:inline-block text-[9px] uppercase font-extrabold tracking-widest px-1.5 py-0.5 rounded bg-[#FFCC00] text-black">
+                  Global
+                </span>
+              )}
             </div>
 
             {/* Submit Action */}

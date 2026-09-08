@@ -2,14 +2,12 @@
 
 import React from 'react';
 import { QuizQuestion, UserResponse } from '@/types/aisat';
-import { Sparkles } from 'lucide-react';
 
 interface QuestionPaletteProps {
   questions: QuizQuestion[];
   currentIndex: number;
   onSelectIndex: (index: number) => void;
   responses: Record<string, UserResponse>;
-  onAutofillAll?: () => void;
 }
 
 export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
@@ -17,7 +15,6 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
   currentIndex,
   onSelectIndex,
   responses,
-  onAutofillAll,
 }) => {
   let answeredCount = 0;
   let markedCount = 0;
@@ -40,17 +37,6 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
             <h4 className="font-extrabold text-sm text-gray-950">
               Question Palette
             </h4>
-            {onAutofillAll && (
-              <button
-                type="button"
-                onClick={onAutofillAll}
-                className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900 hover:bg-amber-200 border border-amber-300 transition-colors cursor-pointer flex items-center gap-1"
-                title="Fill all answers with sample demo data"
-              >
-                <Sparkles className="w-3 h-3 text-amber-700" />
-                <span>Demo Fill</span>
-              </button>
-            )}
           </div>
           <span className="text-xs text-gray-500 font-bold font-mono">
             {currentIndex + 1} of {questions.length}

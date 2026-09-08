@@ -89,6 +89,8 @@ export interface AttemptViewResponse {
       stakes: string;
       maxAttempts: number;
       feedbackTiming: string;
+      timerType?: 'PER_STUDENT' | 'GLOBAL';
+      maxViolations?: number;
     };
     items: AttemptViewItem[];
   };
@@ -201,7 +203,7 @@ export const aisatApi = {
     return data;
   },
 
-  async submitAttempt(attemptId: string, answers: SubmitAnswerPayload[]) {
+  async submitAttempt(attemptId: string, answers: SubmitAnswerPayload[], submitReason?: string) {
     const token = this.getToken();
     if (!token) throw new Error('Not authenticated');
 
@@ -211,7 +213,7 @@ export const aisatApi = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ answers }),
+      body: JSON.stringify({ answers, submitReason }),
     });
 
     const data = await res.json();
@@ -237,5 +239,25 @@ export const aisatApi = {
       throw new Error(data.message || data.error || 'Failed to fetch result');
     }
     return data;
+  },
+
+  async logIntegrityEvent(attemptId: string, eventType: string, metadata?: Record<string, any>) {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/quiz-delivery/attempts/${attemptId}/integrity-events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ eventType, metadata }),
+      });
+      return await res.json();
+    } catch (err) {
+      console.warn('Failed to log integrity event:', err);
+      return null;
+    }
   },
 };

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, useRef, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { SAMPLE_AISAT_QUIZ } from '@/lib/quizData';
 import { CandidateLead, QuizQuestion, UserResponse } from '@/types/aisat';
@@ -8,6 +8,8 @@ import { aisatApi } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';
 import { QuestionPalette } from '@/components/quiz/QuestionPalette';
 import { SubmitModal } from '@/components/quiz/SubmitModal';
+import { TabSwitchWarningModal } from '@/components/quiz/TabSwitchWarningModal';
+import { useExamIntegrity } from '@/hooks/useExamIntegrity';
 
 // Question Renderers
 import { MCQSingleRenderer } from '@/components/quiz/renderers/MCQSingleRenderer';
@@ -23,7 +25,6 @@ import {
   ChevronRight,
   Bookmark,
   RotateCcw,
-  Sparkles,
 } from 'lucide-react';
 
 // Helper to format frontend state to backend AnswerPayload schema
@@ -114,6 +115,28 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const isSubmittingRef = useRef(false);
+
+  const [serverDeadlineAt, setServerDeadlineAt] = useState<string | null>(null);
+  const [serverRemainingSec, setServerRemainingSec] = useState<number | null>(null);
+  const [timerType, setTimerType] = useState<'PER_STUDENT' | 'GLOBAL'>('PER_STUDENT');
+  const [maxViolationsConfig, setMaxViolationsConfig] = useState(3);
+
+  const {
+    violationCount,
+    isWarningOpen,
+    lastAwayDurationMs,
+    closeWarning,
+    maxViolations,
+  } = useExamIntegrity({
+    attemptId,
+    enabled: !!attemptId && !isSubmitting,
+    maxViolations: maxViolationsConfig,
+    onLimitExceeded: () => {
+      handleConfirmSubmit('AUTO_SUBMIT_TAB_SWITCH');
+    },
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -147,23 +170,43 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
         if (attemptRes?.data?.attempt) {
           setAttemptId(attemptRes.data.attempt.attemptId);
+          setServerDeadlineAt(attemptRes.data.attempt.deadlineAt);
+          setServerRemainingSec(attemptRes.data.attempt.remainingSec);
+          if (attemptRes.data.quiz?.timerType) {
+            setTimerType(attemptRes.data.quiz.timerType as 'PER_STUDENT' | 'GLOBAL');
+          }
+          if (attemptRes.data.quiz?.maxViolations) {
+            setMaxViolationsConfig(attemptRes.data.quiz.maxViolations);
+          }
 
           if (attemptRes.data.items && attemptRes.data.items.length > 0) {
             const backendItems = attemptRes.data.items;
-            const mergedQuestions = SAMPLE_AISAT_QUIZ.questions.map((q, idx) => {
-              const bItem = backendItems[idx];
-              if (!bItem) return q;
+            const mergedQuestions = backendItems.map((bItem: any, idx: number) => {
+              const template =
+                SAMPLE_AISAT_QUIZ.questions.find((q) => q.itemVersionId === bItem.itemVersionId) ||
+                SAMPLE_AISAT_QUIZ.questions.find((q) => q.prompt === bItem.stem) ||
+                SAMPLE_AISAT_QUIZ.questions[idx] || {
+                  id: bItem.itemVersionId || `q_${idx + 1}`,
+                  sectionId: 'sec-a',
+                  type: bItem.interactionType || 'MCQ_SINGLE',
+                  title: `Question ${idx + 1}`,
+                  prompt: bItem.stem,
+                  options: bItem.options,
+                  marks: bItem.points || 4,
+                };
               return {
-                ...q,
+                ...template,
+                id: template.id || bItem.itemVersionId || `q_${idx + 1}`,
                 itemVersionId: bItem.itemVersionId,
-                options: bItem.options && bItem.options.length > 0 ? bItem.options : q.options,
+                prompt: bItem.stem || template.prompt,
+                options: bItem.options && bItem.options.length > 0 ? bItem.options : template.options,
               };
             });
             setQuestions(mergedQuestions);
 
             // Restore drafts if resuming attempt
             const restored: Record<string, UserResponse> = {};
-            backendItems.forEach((bItem, idx) => {
+            backendItems.forEach((bItem: any, idx: number) => {
               const q = mergedQuestions[idx];
               if (bItem.savedAnswer !== undefined && bItem.savedAnswer !== null) {
                 const parsed = parseAnswerFromBackend(q.type, bItem.savedAnswer);
@@ -256,75 +299,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
     });
   };
 
-  const handleAutofillAllAnswers = async () => {
-    const autofilled: Record<string, UserResponse> = {};
-    const now = new Date().toISOString();
-
-    questions.forEach((q, idx) => {
-      let sampleAnswer: any = null;
-
-      if (q.type === 'MCQ_SINGLE' && q.options && q.options.length > 0) {
-        const pickIdx = idx % q.options.length;
-        sampleAnswer = q.options[pickIdx].id;
-      } else if (q.type === 'MCQ_MULTI' && q.options && q.options.length > 0) {
-        if (q.options.length >= 2) {
-          sampleAnswer = [q.options[0].id, q.options[1].id];
-        } else {
-          sampleAnswer = [q.options[0].id];
-        }
-      } else if (q.type === 'FILL_IN_BLANKS') {
-        sampleAnswer = q.options?.[0]?.text || 'temperature';
-      } else if (q.type === 'NUMERIC') {
-        sampleAnswer = 42;
-      } else if (q.type === 'MATCH_COLUMNS' && q.matchPairs) {
-        const pairs: Record<string, string> = {};
-        const lefts = q.matchPairs.leftItems || [];
-        const rights = q.matchPairs.rightItems || [];
-        lefts.forEach((l, i) => {
-          if (rights[i]) {
-            pairs[l.id] = rights[i].id;
-          }
-        });
-        sampleAnswer = pairs;
-      } else if (q.type === 'SHORT_ANSWER') {
-        sampleAnswer = 'The agent loop fails to check tool schema validity before dispatching calls, leading to unbounded retry cycles without context rollback.';
-      } else if (q.type === 'CODING_CHALLENGE') {
-        sampleAnswer = `def optimize_agent_latency(steps):\n    # Filter redundant tool invocations\n    seen = set()\n    optimized = []\n    for step in steps:\n        if step.signature not in seen:\n            seen.add(step.signature)\n            optimized.append(step)\n    return optimized`;
-      } else {
-        sampleAnswer = q.options?.[0]?.id || 'Valid response';
-      }
-
-      autofilled[q.id] = {
-        questionId: q.id,
-        type: q.type,
-        answer: sampleAnswer,
-        isMarkedForReview: idx % 8 === 0,
-        timeSpentSeconds: 20,
-        lastSavedAt: now,
-      };
-    });
-
-    setResponses(autofilled);
-    sessionStorage.setItem('aisat_responses', JSON.stringify(autofilled));
-
-    if (attemptId) {
-      setIsSaving(true);
-      try {
-        const savePromises = questions
-          .filter((q) => q.itemVersionId && autofilled[q.id]?.answer !== null)
-          .map((q) => {
-            const formatted = formatAnswerForBackend(q.type, autofilled[q.id].answer);
-            return aisatApi.saveResponse(attemptId, q.itemVersionId!, formatted, 20);
-          });
-        await Promise.allSettled(savePromises);
-      } catch (e) {
-        console.warn('Batch autosave error:', e);
-      } finally {
-        setIsSaving(false);
-      }
-    }
-  };
-
   const handleNext = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -344,8 +318,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
     }
   };
 
-  const handleConfirmSubmit = async () => {
+  const handleConfirmSubmit = useCallback(async (submitReason?: string) => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
+    setSubmitError(null);
+
     const paramId = resolvedParams.quizId;
     const targetQuizId =
       paramId && paramId.includes('-') && paramId.length === 36
@@ -368,7 +346,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
             };
           });
 
-        const submitRes = await aisatApi.submitAttempt(attemptId, answersPayload);
+        const submitRes = await aisatApi.submitAttempt(attemptId, answersPayload, submitReason || 'USER_SUBMIT');
         backendResult = submitRes.data;
       }
 
@@ -378,29 +356,34 @@ export default function QuizPlayerPage({ params }: PageProps) {
         candidate,
         result: backendResult,
         responses,
+        submitReason: submitReason || 'USER_SUBMIT',
         submittedAt: new Date().toISOString(),
       };
       sessionStorage.setItem('aisat_final_submission', JSON.stringify(submissionPayload));
 
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       setIsSubmitModalOpen(false);
       router.push('/test/completed');
     } catch (err: any) {
       console.error('Failed to submit attempt to backend:', err);
+      setSubmitError(err?.message || 'Submission failed');
       const fallbackPayload = {
         quizId: targetQuizId,
         attemptId,
         candidate,
         responses,
+        submitReason: submitReason || 'USER_SUBMIT',
         submittedAt: new Date().toISOString(),
         error: err?.message,
       };
       sessionStorage.setItem('aisat_final_submission', JSON.stringify(fallbackPayload));
       setIsSubmitting(false);
+      isSubmittingRef.current = false;
       setIsSubmitModalOpen(false);
       router.push('/test/completed');
     }
-  };
+  }, [attemptId, candidate, questions, responses, resolvedParams.quizId, router]);
 
   const renderInteractionWidget = () => {
     switch (currentQuestion.type) {
@@ -478,7 +461,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
         activeSectionId={activeSectionId}
         onSelectSection={handleSelectSection}
         durationMinutes={quiz.totalDurationMinutes}
-        onTimeExpired={() => setIsSubmitModalOpen(true)}
+        serverDeadlineAt={serverDeadlineAt}
+        serverRemainingSec={serverRemainingSec}
+        timerType={timerType}
+        onTimeExpired={() => handleConfirmSubmit('TIME_EXPIRED')}
         onSubmitClick={() => setIsSubmitModalOpen(true)}
         isSaving={isSaving}
         candidate={candidate}
@@ -587,16 +573,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
-
-                  <button
-                    onClick={handleAutofillAllAnswers}
-                    className="px-3 py-2 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition-colors cursor-pointer flex items-center gap-1.5"
-                    title="Demo: Autofill all 40 questions with sample answers"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    <span className="hidden sm:inline">Demo: Fill All Answers</span>
-                    <span className="sm:hidden">Fill All</span>
-                  </button>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -646,7 +622,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
               currentIndex={currentIndex}
               onSelectIndex={(idx) => setCurrentIndex(idx)}
               responses={responses}
-              onAutofillAll={handleAutofillAllAnswers}
             />
           </div>
 
@@ -660,6 +635,17 @@ export default function QuizPlayerPage({ params }: PageProps) {
         questions={questions}
         responses={responses}
         isSubmitting={isSubmitting}
+      />
+
+      <TabSwitchWarningModal
+        isOpen={isWarningOpen}
+        onClose={closeWarning}
+        violationCount={violationCount}
+        maxViolations={maxViolations}
+        awayDurationMs={lastAwayDurationMs}
+        isSubmitting={isSubmitting}
+        submitError={submitError}
+        onRetrySubmit={() => handleConfirmSubmit('AUTO_SUBMIT_TAB_SWITCH')}
       />
     </div>
   );
