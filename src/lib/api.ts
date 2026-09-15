@@ -63,6 +63,7 @@ export interface AttemptViewItem {
     tier?: string;
     context?: string;
     transcript?: string;
+    language?: string;
   } | string;
   interactionType: string;
   options?: any;
@@ -241,9 +242,57 @@ export const aisatApi = {
     return data;
   },
 
+  async flushPendingIntegrityEvents(attemptId: string) {
+    if (typeof window === 'undefined') return;
+    const token = this.getToken();
+    if (!token) return;
+
+    const storageKey = `aisat_pending_events_${attemptId}`;
+    const raw = sessionStorage.getItem(storageKey);
+    if (!raw) return;
+
+    let pending: Array<{ eventType: string; metadata?: Record<string, any>; timestamp?: number }> = [];
+    try {
+      pending = JSON.parse(raw);
+    } catch {
+      sessionStorage.removeItem(storageKey);
+      return;
+    }
+
+    if (!Array.isArray(pending) || pending.length === 0) return;
+
+    const remaining: typeof pending = [];
+    for (const item of pending) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/quiz-delivery/attempts/${attemptId}/integrity-events`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ eventType: item.eventType, metadata: item.metadata }),
+        });
+        if (!res.ok) {
+          remaining.push(item);
+        }
+      } catch {
+        remaining.push(item);
+      }
+    }
+
+    if (remaining.length === 0) {
+      sessionStorage.removeItem(storageKey);
+    } else {
+      sessionStorage.setItem(storageKey, JSON.stringify(remaining));
+    }
+  },
+
   async logIntegrityEvent(attemptId: string, eventType: string, metadata?: Record<string, any>) {
     const token = this.getToken();
     if (!token) return null;
+
+    // Attempt to flush any previously failed events first
+    await this.flushPendingIntegrityEvents(attemptId);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/quiz-delivery/attempts/${attemptId}/integrity-events`, {
@@ -254,9 +303,22 @@ export const aisatApi = {
         },
         body: JSON.stringify({ eventType, metadata }),
       });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
       return await res.json();
     } catch (err) {
-      console.warn('Failed to log integrity event:', err);
+      console.warn('Failed to log integrity event, saving to retry queue:', err);
+      if (typeof window !== 'undefined') {
+        const storageKey = `aisat_pending_events_${attemptId}`;
+        const raw = sessionStorage.getItem(storageKey);
+        let list: any[] = [];
+        try {
+          list = raw ? JSON.parse(raw) : [];
+        } catch {}
+        list.push({ eventType, metadata, timestamp: Date.now() });
+        sessionStorage.setItem(storageKey, JSON.stringify(list));
+      }
       return null;
     }
   },

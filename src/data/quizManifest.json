@@ -1,0 +1,1157 @@
+{
+  "id": "aisat-2026-agentic-tech",
+  "title": "AISAT — Agentic AI Saksham (Tech)",
+  "subtitle": "Engineering CS Benchmark & Evaluation Assessment",
+  "code": "AISAT-TECH-2026",
+  "totalDurationMinutes": 45,
+  "totalMarks": 170,
+  "instructions": [
+    "This is a snapshot of where you actually stand with agentic AI tools right now, not a pass/fail test.",
+    "There are 40 questions across five short sections, each with its own instructions.",
+    "Answer honestly and move at your own pace.",
+    "Your responses are automatically saved in real time.",
+    "No trick questions; select the response that best reflects sound technical judgment."
+  ],
+  "sections": [
+    {
+      "id": "sec-a",
+      "title": "Section A · Knowledge Check",
+      "description": "These questions test whether the concepts from the workshop actually hold up, not whether you remember a definition. Some options will look close together on purpose.",
+      "durationMinutes": 10,
+      "questionIds": [
+        "q_A_1",
+        "q_A_2",
+        "q_A_3",
+        "q_A_4",
+        "q_A_5",
+        "q_A_6",
+        "q_A_7",
+        "q_A_8",
+        "q_A_9",
+        "q_A_10",
+        "q_A_11",
+        "q_A_12",
+        "q_A_13",
+        "q_A_14",
+        "q_A_15",
+        "q_A_16",
+        "q_A_17",
+        "q_A_18",
+        "q_A_19",
+        "q_A_20",
+        "q_A_21",
+        "q_A_22",
+        "q_A_23",
+        "q_A_24",
+        "q_A_25",
+        "q_A_26"
+      ]
+    },
+    {
+      "id": "sec-b",
+      "title": "Section B · Scenario Judgment",
+      "description": "Each scenario is a realistic situation, not a trivia question. There's rarely a purely 'correct' answer here — pick the response that reflects the soundest judgment call.",
+      "durationMinutes": 8,
+      "questionIds": [
+        "q_B_1",
+        "q_B_2",
+        "q_B_3",
+        "q_B_4",
+        "q_B_5"
+      ]
+    },
+    {
+      "id": "sec-c",
+      "title": "Section C · Code Review",
+      "description": "These are short written answers, not multiple choice. We're checking whether you can spot what's wrong in a real RAG setup and explain the fix in your own words.",
+      "durationMinutes": 8,
+      "questionIds": [
+        "q_C_1",
+        "q_C_2"
+      ]
+    },
+    {
+      "id": "sec-d",
+      "title": "Section D · Workflow Critique",
+      "description": "Below is a real execution log from an agent handling a supplier update task. Something in it went wrong. The same transcript stays visible for all four questions in this section.",
+      "durationMinutes": 8,
+      "questionIds": [
+        "q_D_1",
+        "q_D_2",
+        "q_D_3",
+        "q_D_4"
+      ]
+    },
+    {
+      "id": "sec-e",
+      "title": "Section E · Tool Depth",
+      "description": "These are tailored to the tool categories you rated yourself highest on earlier. They test the difference between having used a tool and actually knowing where it breaks.",
+      "durationMinutes": 8,
+      "questionIds": [
+        "q_E_1",
+        "q_E_2",
+        "q_E_3"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_A_1",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q1",
+      "prompt": "An agent is given a goal and a set of tools, but no explicit step-by-step instructions. What primarily determines the sequence of actions it takes?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The order the tools are listed in its configuration"
+        },
+        {
+          "id": "opt-b",
+          "text": "The agent's own reasoning loop, deciding each next action based on the goal and prior results"
+        },
+        {
+          "id": "opt-c",
+          "text": "A fixed script the developer writes for every possible goal"
+        },
+        {
+          "id": "opt-d",
+          "text": "The order in which the tools were most recently used"
+        }
+      ],
+      "comp": "Agentic AI",
+      "tier": "Developing",
+      "explanationHint": "Developing · Agentic AI"
+    },
+    {
+      "id": "q_A_2",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q2",
+      "prompt": "Which of these best distinguishes an \"agent\" from a simple LLM pipeline?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "An agent uses a larger underlying model than a pipeline does"
+        },
+        {
+          "id": "opt-b",
+          "text": "An agent can decide which tool to call next based on intermediate results, a pipeline follows a fixed sequence"
+        },
+        {
+          "id": "opt-c",
+          "text": "An agent never requires any human oversight once launched"
+        },
+        {
+          "id": "opt-d",
+          "text": "An agent only works with structured data, a pipeline works with any input"
+        }
+      ],
+      "comp": "Agentic AI",
+      "tier": "Developing",
+      "explanationHint": "Developing · Agentic AI"
+    },
+    {
+      "id": "q_A_3",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q3",
+      "prompt": "An agent is looping repeatedly on the same failed tool call without making progress. What is the most likely underlying cause?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The model's context window is too large for the task"
+        },
+        {
+          "id": "opt-b",
+          "text": "The agent has no termination or retry-limit condition, so it keeps retrying on failure"
+        },
+        {
+          "id": "opt-c",
+          "text": "The tool being called is written in the wrong programming language"
+        },
+        {
+          "id": "opt-d",
+          "text": "The agent's temperature setting is set too low"
+        }
+      ],
+      "comp": "Agentic AI",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · Agentic AI"
+    },
+    {
+      "id": "q_A_4",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q4",
+      "prompt": "When designing an agent that can take real-world actions (sending emails, modifying files), which safeguard matters most before deployment?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Making sure the agent's prompts are as short as possible"
+        },
+        {
+          "id": "opt-b",
+          "text": "Requiring human confirmation or a permission boundary before irreversible actions"
+        },
+        {
+          "id": "opt-c",
+          "text": "Increasing the model's temperature so it explores more options"
+        },
+        {
+          "id": "opt-d",
+          "text": "Removing all tool-use logging to reduce latency"
+        }
+      ],
+      "comp": "Agentic AI",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · Agentic AI"
+    },
+    {
+      "id": "q_A_5",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q5",
+      "prompt": "In a multi-step automated workflow, what is the main advantage of breaking a task into discrete steps rather than one large prompt?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "It always makes the workflow run faster"
+        },
+        {
+          "id": "opt-b",
+          "text": "Each step can be checked, retried, or corrected independently if something goes wrong"
+        },
+        {
+          "id": "opt-c",
+          "text": "It reduces the total number of tokens used to zero"
+        },
+        {
+          "id": "opt-d",
+          "text": "It removes the need for any error handling"
+        }
+      ],
+      "comp": "AI Workflow Automation",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Workflow Automation"
+    },
+    {
+      "id": "q_A_6",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q6",
+      "prompt": "A workflow automation tool triggers an action whenever a new row is added to a spreadsheet. What is this trigger-action pattern generally called?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "A batch process"
+        },
+        {
+          "id": "opt-b",
+          "text": "An event-driven automation"
+        },
+        {
+          "id": "opt-c",
+          "text": "A static pipeline"
+        },
+        {
+          "id": "opt-d",
+          "text": "A manual override"
+        }
+      ],
+      "comp": "AI Workflow Automation",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Workflow Automation"
+    },
+    {
+      "id": "q_A_7",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q7",
+      "prompt": "A workflow has five sequential steps. Step 3 fails intermittently. What is the most robust design choice?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Remove step 3 entirely since it's unreliable"
+        },
+        {
+          "id": "opt-b",
+          "text": "Add retry logic and a fallback path specifically around step 3, not the whole workflow"
+        },
+        {
+          "id": "opt-c",
+          "text": "Restart the entire five-step workflow from step 1 every time step 3 fails"
+        },
+        {
+          "id": "opt-d",
+          "text": "Run step 3 last instead of third"
+        }
+      ],
+      "comp": "AI Workflow Automation",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI Workflow Automation"
+    },
+    {
+      "id": "q_A_8",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q8",
+      "prompt": "Why might a workflow that worked correctly in testing fail once deployed with real data?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Real data often contains edge cases and formatting the test data didn't cover"
+        },
+        {
+          "id": "opt-b",
+          "text": "Deployed workflows always run slower than test workflows"
+        },
+        {
+          "id": "opt-c",
+          "text": "Production environments cannot run automated workflows"
+        },
+        {
+          "id": "opt-d",
+          "text": "The workflow logic changes automatically after deployment"
+        }
+      ],
+      "comp": "AI Workflow Automation",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI Workflow Automation"
+    },
+    {
+      "id": "q_A_9",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q9",
+      "prompt": "When an API call fails with a rate-limit error, what does that typically mean?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The API key is invalid"
+        },
+        {
+          "id": "opt-b",
+          "text": "Too many requests were sent in a given time window"
+        },
+        {
+          "id": "opt-c",
+          "text": "The request body was formatted incorrectly"
+        },
+        {
+          "id": "opt-d",
+          "text": "The server hosting the API is permanently down"
+        }
+      ],
+      "comp": "AI APIs & Integrations",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI APIs & Integrations"
+    },
+    {
+      "id": "q_A_10",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q10",
+      "prompt": "What is the primary purpose of an API key or token in most integrations?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "To compress the data being sent"
+        },
+        {
+          "id": "opt-b",
+          "text": "To authenticate the request and identify who is making it"
+        },
+        {
+          "id": "opt-c",
+          "text": "To translate the request into a different programming language"
+        },
+        {
+          "id": "opt-d",
+          "text": "To determine which server region handles the request"
+        }
+      ],
+      "comp": "AI APIs & Integrations",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI APIs & Integrations"
+    },
+    {
+      "id": "q_A_11",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q11",
+      "prompt": "An integration receives a malformed or unexpected response from an external API. What is the best practice?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Assume the response is correct and proceed"
+        },
+        {
+          "id": "opt-b",
+          "text": "Validate and handle the response explicitly, with a defined fallback if it's malformed"
+        },
+        {
+          "id": "opt-c",
+          "text": "Restart the entire application"
+        },
+        {
+          "id": "opt-d",
+          "text": "Ignore the response and retry the exact same request indefinitely"
+        }
+      ],
+      "comp": "AI APIs & Integrations",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI APIs & Integrations"
+    },
+    {
+      "id": "q_A_12",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q12",
+      "prompt": "What does MCP (Model Context Protocol) primarily standardize?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The pricing structure across different AI model providers"
+        },
+        {
+          "id": "opt-b",
+          "text": "How an AI model connects to and uses external tools and data sources"
+        },
+        {
+          "id": "opt-c",
+          "text": "The programming language used to train large language models"
+        },
+        {
+          "id": "opt-d",
+          "text": "The visual interface for chat-based AI applications"
+        }
+      ],
+      "comp": "AI APIs & Integrations",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI APIs & Integrations"
+    },
+    {
+      "id": "q_A_13",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q13",
+      "prompt": "Why can a large language model state an incorrect fact with the same confident tone as a correct one?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "It intentionally hides uncertainty from users"
+        },
+        {
+          "id": "opt-b",
+          "text": "It generates the most statistically likely next words, which doesn't guarantee factual accuracy"
+        },
+        {
+          "id": "opt-c",
+          "text": "It only makes mistakes on topics after its training cutoff"
+        },
+        {
+          "id": "opt-d",
+          "text": "Confidence in tone is a setting the user must manually enable"
+        }
+      ],
+      "comp": "AI Literacy",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Literacy"
+    },
+    {
+      "id": "q_A_14",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q14",
+      "prompt": "What does a model's \"context window\" refer to?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The visual size of the chat interface"
+        },
+        {
+          "id": "opt-b",
+          "text": "The amount of text the model can consider at once when generating a response"
+        },
+        {
+          "id": "opt-c",
+          "text": "The time period the model was trained on"
+        },
+        {
+          "id": "opt-d",
+          "text": "The number of tools the model can call in one turn"
+        }
+      ],
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI Literacy"
+    },
+    {
+      "id": "q_A_15",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q15",
+      "prompt": "Which prompt is most likely to produce a consistent, usable output on the first try?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "\"Write something about our project\""
+        },
+        {
+          "id": "opt-b",
+          "text": "\"Summarize this report in 3 bullet points, under 20 words each, for a non-technical manager\""
+        },
+        {
+          "id": "opt-c",
+          "text": "\"Can you help with this document please\""
+        },
+        {
+          "id": "opt-d",
+          "text": "\"Make this better\""
+        }
+      ],
+      "comp": "Prompt Engineering",
+      "tier": "Developing",
+      "explanationHint": "Developing · Prompt Engineering"
+    },
+    {
+      "id": "q_A_16",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q16",
+      "prompt": "A prompt keeps producing outputs that are technically correct but in the wrong format for downstream use. What's the most effective fix?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Increase the model's temperature setting"
+        },
+        {
+          "id": "opt-b",
+          "text": "Explicitly specify the required output format and structure in the prompt itself"
+        },
+        {
+          "id": "opt-c",
+          "text": "Repeat the same prompt multiple times until it works"
+        },
+        {
+          "id": "opt-d",
+          "text": "Switch to a different, unrelated task"
+        }
+      ],
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · Prompt Engineering"
+    },
+    {
+      "id": "q_A_17",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q17",
+      "prompt": "An AI assistant cites a statistic without a source. What is the appropriate next step?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Use it as given, since the AI generated it"
+        },
+        {
+          "id": "opt-b",
+          "text": "Trace it back to a verifiable original source before relying on it"
+        },
+        {
+          "id": "opt-c",
+          "text": "Assume it's correct if it sounds plausible"
+        },
+        {
+          "id": "opt-d",
+          "text": "Rephrase it in your own words to avoid needing a source"
+        }
+      ],
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Research & Info Retrieval"
+    },
+    {
+      "id": "q_A_18",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q18",
+      "prompt": "When would a deep-research or multi-source tool mode be necessary instead of a single prompt?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "When the answer requires synthesizing and cross-checking many current sources, not just one"
+        },
+        {
+          "id": "opt-b",
+          "text": "When the task is purely creative writing with no factual claims"
+        },
+        {
+          "id": "opt-c",
+          "text": "Never, a single well-written prompt is always sufficient"
+        },
+        {
+          "id": "opt-d",
+          "text": "Only when the user has no internet access"
+        }
+      ],
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI Research & Info Retrieval"
+    },
+    {
+      "id": "q_A_19",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q19",
+      "prompt": "An AI coding assistant is given access to a production database to \"help debug faster.\" What is the main risk?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The assistant will run slower with more access"
+        },
+        {
+          "id": "opt-b",
+          "text": "It may take unintended or destructive actions beyond what's actually needed for debugging"
+        },
+        {
+          "id": "opt-c",
+          "text": "Production databases cannot be accessed by AI tools at all"
+        },
+        {
+          "id": "opt-d",
+          "text": "The assistant will refuse the task automatically"
+        }
+      ],
+      "comp": "Responsible AI",
+      "tier": "Developing",
+      "explanationHint": "Developing · Responsible AI"
+    },
+    {
+      "id": "q_A_20",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q20",
+      "prompt": "Why is granting an AI agent the minimum necessary permissions (rather than broad access) considered good practice?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "It makes the agent respond faster"
+        },
+        {
+          "id": "opt-b",
+          "text": "It limits the damage if the agent makes an error or is misused"
+        },
+        {
+          "id": "opt-c",
+          "text": "It is required by every AI provider's terms of service"
+        },
+        {
+          "id": "opt-d",
+          "text": "It has no real effect on safety, only on cost"
+        }
+      ],
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · Responsible AI"
+    },
+    {
+      "id": "q_A_21",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q21",
+      "prompt": "An AI agent reports that a multi-step task \"completed successfully.\" Should this be trusted without verification?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Yes, agents only report success when every step genuinely succeeded"
+        },
+        {
+          "id": "opt-b",
+          "text": "Not necessarily, intermediate steps can fail silently even when the final report says success"
+        },
+        {
+          "id": "opt-c",
+          "text": "Yes, but only for tasks involving text generation"
+        },
+        {
+          "id": "opt-d",
+          "text": "No AI agent can ever report success accurately"
+        }
+      ],
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Evaluation & Critical Judgement"
+    },
+    {
+      "id": "q_A_22",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q22",
+      "prompt": "Which is the strongest signal that AI-generated output needs closer scrutiny before use?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The output is longer than expected"
+        },
+        {
+          "id": "opt-b",
+          "text": "The output makes a specific, checkable factual or numerical claim"
+        },
+        {
+          "id": "opt-c",
+          "text": "The output took longer than usual to generate"
+        },
+        {
+          "id": "opt-d",
+          "text": "The output uses formal language"
+        }
+      ],
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Proficient",
+      "explanationHint": "Proficient · AI Evaluation & Critical Judgement"
+    },
+    {
+      "id": "q_A_23",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q23",
+      "prompt": "When using AI to draft a professional email, what should the user still do before sending it?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Nothing, well-formatted AI output is ready to send as-is"
+        },
+        {
+          "id": "opt-b",
+          "text": "Review it for tone, accuracy, and appropriateness to the actual recipient"
+        },
+        {
+          "id": "opt-c",
+          "text": "Only check the spelling"
+        },
+        {
+          "id": "opt-d",
+          "text": "Make it longer to sound more thorough"
+        }
+      ],
+      "comp": "AI Communication",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Communication"
+    },
+    {
+      "id": "q_A_24",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q24",
+      "prompt": "An AI tool generates a graphic for a presentation. What is the most important thing to check before using it?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "That it matches the intended message and brand context, not just that it looks polished"
+        },
+        {
+          "id": "opt-b",
+          "text": "That it was generated in under 10 seconds"
+        },
+        {
+          "id": "opt-c",
+          "text": "That it uses as many colors as possible"
+        },
+        {
+          "id": "opt-d",
+          "text": "That the AI tool used is the newest version available"
+        }
+      ],
+      "comp": "AI Content Creation",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Content Creation"
+    },
+    {
+      "id": "q_A_25",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q25",
+      "prompt": "What is the main benefit of using AI to organize and summarize notes across multiple documents?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "It permanently deletes the original documents"
+        },
+        {
+          "id": "opt-b",
+          "text": "It can surface patterns and connections faster than manual review, though it should still be checked"
+        },
+        {
+          "id": "opt-c",
+          "text": "It guarantees zero factual errors"
+        },
+        {
+          "id": "opt-d",
+          "text": "It replaces the need to read source documents ever again"
+        }
+      ],
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Developing",
+      "explanationHint": "Developing · AI Productivity & Knowledge Mgmt"
+    },
+    {
+      "id": "q_A_26",
+      "sectionId": "sec-a",
+      "type": "MCQ_SINGLE",
+      "title": "Knowledge Check · Q26",
+      "prompt": "An AI tool analyzes a dataset and recommends a decision. What should happen before acting on that recommendation?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Act on it immediately since AI analysis is objective"
+        },
+        {
+          "id": "opt-b",
+          "text": "Sanity-check the underlying data and reasoning, since AI can misread patterns or outliers"
+        },
+        {
+          "id": "opt-c",
+          "text": "Ignore it entirely, AI should never be used for data analysis"
+        },
+        {
+          "id": "opt-d",
+          "text": "Only check the recommendation if the dataset is very large"
+        }
+      ],
+      "comp": "Data Analysis & Decision Support",
+      "tier": "Developing",
+      "explanationHint": "Developing · Data Analysis & Decision Support"
+    },
+    {
+      "id": "q_B_1",
+      "sectionId": "sec-b",
+      "type": "MCQ_SINGLE",
+      "title": "Scenario Judgment · Q1",
+      "prompt": "You built an agent to process 50 customer records and update a CRM. It reports \"all 50 records updated successfully.\" What is the most appropriate next step?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Move on, the agent's report is sufficient confirmation"
+        },
+        {
+          "id": "opt-b",
+          "text": "Spot-check a sample of the records directly in the CRM to confirm the updates are correct"
+        },
+        {
+          "id": "opt-c",
+          "text": "Re-run the entire agent from scratch just to be safe"
+        },
+        {
+          "id": "opt-d",
+          "text": "Ask the agent to repeat its report in different words"
+        }
+      ],
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Trust-calibration",
+      "explanationHint": "Trust-calibration · AI Evaluation & Critical Judgement"
+    },
+    {
+      "id": "q_B_2",
+      "sectionId": "sec-b",
+      "type": "MCQ_SINGLE",
+      "title": "Scenario Judgment · Q2",
+      "prompt": "You're automating a workflow that must run reliably every day versus one that can tolerate occasional manual review. Which approach fits a task where a wrong output could cause real financial harm (e.g., auto-approving refunds)?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Fully automate with no human checkpoint, to maximize speed"
+        },
+        {
+          "id": "opt-b",
+          "text": "Automate the analysis but require human sign-off before the irreversible action executes"
+        },
+        {
+          "id": "opt-c",
+          "text": "Avoid automation entirely and do the task manually forever"
+        },
+        {
+          "id": "opt-d",
+          "text": "Automate it and check results once a month"
+        }
+      ],
+      "comp": "AI Workflow Automation",
+      "tier": "Trade-off",
+      "explanationHint": "Trade-off · AI Workflow Automation"
+    },
+    {
+      "id": "q_B_3",
+      "sectionId": "sec-b",
+      "type": "MCQ_SINGLE",
+      "title": "Scenario Judgment · Q3",
+      "prompt": "An agent meant to research and summarize competitor pricing keeps returning outdated information. Tool access looks correctly configured. What's the most likely root cause to investigate first?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "The agent's summarization style is too concise"
+        },
+        {
+          "id": "opt-b",
+          "text": "The agent may be relying on the model's training data instead of actually calling its search/retrieval tool"
+        },
+        {
+          "id": "opt-c",
+          "text": "The competitor's pricing page uses too many images"
+        },
+        {
+          "id": "opt-d",
+          "text": "The agent needs a longer system prompt"
+        }
+      ],
+      "comp": "Agentic AI",
+      "tier": "Debugging",
+      "explanationHint": "Debugging · Agentic AI"
+    },
+    {
+      "id": "q_B_4",
+      "sectionId": "sec-b",
+      "type": "MCQ_SINGLE",
+      "title": "Scenario Judgment · Q4",
+      "prompt": "A team wants to give their support agent access to a tool that can issue account refunds automatically, to \"save time.\" What's the most responsible design?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Grant full refund authority immediately, since it saves the most time"
+        },
+        {
+          "id": "opt-b",
+          "text": "Have the agent draft the refund for human approval below a set threshold, and require approval above it"
+        },
+        {
+          "id": "opt-c",
+          "text": "Never allow the agent to touch refunds under any circumstance"
+        },
+        {
+          "id": "opt-d",
+          "text": "Grant access but disable all logging so it runs faster"
+        }
+      ],
+      "comp": "Responsible AI",
+      "tier": "Permission scope",
+      "explanationHint": "Permission scope · Responsible AI"
+    },
+    {
+      "id": "q_B_5",
+      "sectionId": "sec-b",
+      "type": "MCQ_SINGLE",
+      "title": "Scenario Judgment · Q5",
+      "prompt": "A team wants to connect an internal tool to an AI assistant so it can pull live inventory data. Before building a custom integration, what should they check first?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Whether an existing, well-supported connector or MCP server already covers this need"
+        },
+        {
+          "id": "opt-b",
+          "text": "Whether the AI model itself has memorized their inventory numbers"
+        },
+        {
+          "id": "opt-c",
+          "text": "Whether the task can be done without any data at all"
+        },
+        {
+          "id": "opt-d",
+          "text": "Whether the integration will look impressive in a demo"
+        }
+      ],
+      "comp": "AI APIs & Integrations",
+      "tier": "Design-judgment",
+      "explanationHint": "Design-judgment · AI APIs & Integrations"
+    },
+    {
+      "id": "q_C_1",
+      "sectionId": "sec-c",
+      "type": "SHORT_ANSWER",
+      "title": "Code Review · Q1",
+      "prompt": "What's likely wrong with this chunking setup, and what would you change?",
+      "marks": 5,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "RAG chunking",
+      "context": "A RAG pipeline splits documents into 2,000-token chunks with no overlap before embedding them. A user asks a question whose answer spans the boundary between two chunks, and the system fails to retrieve it correctly.",
+      "explanationHint": "RAG chunking · AI Evaluation & Critical Judgement"
+    },
+    {
+      "id": "q_C_2",
+      "sectionId": "sec-c",
+      "type": "SHORT_ANSWER",
+      "title": "Code Review · Q2",
+      "prompt": "Why would this cause poor retrieval results, and what's the fix?",
+      "marks": 5,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Embedding mismatch",
+      "context": "A team builds a RAG system where documents are embedded using one embedding model, but user queries at inference time are embedded using a different, unrelated embedding model.",
+      "explanationHint": "Embedding mismatch · AI Research & Info Retrieval"
+    },
+    {
+      "id": "q_D_1",
+      "sectionId": "sec-d",
+      "type": "SHORT_ANSWER",
+      "title": "Workflow Critique · Q1",
+      "prompt": "What went wrong in this execution? Identify the flaw.",
+      "marks": 5,
+      "comp": "Workflow Readiness",
+      "tier": "Diagnosis",
+      "transcript": "[Agent] Goal: Read latest supplier email, extract new pricing, update spreadsheet.\n[Tool Call 1] read_email(folder=\"Suppliers\", limit=1) → returned email from \"supplier-updates@vendor-mail.co\"\n[Agent] Extracted: Item A: ₹450, Item B: ₹1,200, Item C: ₹80\n[Tool Call 2] update_spreadsheet(sheet=\"Pricing\", rows=[A,B,C]) → success\n[Agent] Task completed successfully. Spreadsheet updated with 3 new prices.\n\nNote: the known supplier domain is \"vendor-mail.com\" — the email above came from a lookalike\ndomain, and the agent had permission to write directly to the live pricing sheet with no review step.",
+      "explanationHint": "Diagnosis · Workflow Readiness"
+    },
+    {
+      "id": "q_D_2",
+      "sectionId": "sec-d",
+      "type": "SHORT_ANSWER",
+      "title": "Workflow Critique · Q2",
+      "prompt": "At which specific step did the flaw occur, and why would it be easy to miss just by reading the agent's final report?",
+      "marks": 5,
+      "comp": "Workflow Readiness",
+      "tier": "Location",
+      "transcript": "[Agent] Goal: Read latest supplier email, extract new pricing, update spreadsheet.\n[Tool Call 1] read_email(folder=\"Suppliers\", limit=1) → returned email from \"supplier-updates@vendor-mail.co\"\n[Agent] Extracted: Item A: ₹450, Item B: ₹1,200, Item C: ₹80\n[Tool Call 2] update_spreadsheet(sheet=\"Pricing\", rows=[A,B,C]) → success\n[Agent] Task completed successfully. Spreadsheet updated with 3 new prices.\n\nNote: the known supplier domain is \"vendor-mail.com\" — the email above came from a lookalike\ndomain, and the agent had permission to write directly to the live pricing sheet with no review step.",
+      "explanationHint": "Location · Workflow Readiness"
+    },
+    {
+      "id": "q_D_3",
+      "sectionId": "sec-d",
+      "type": "SHORT_ANSWER",
+      "title": "Workflow Critique · Q3",
+      "prompt": "What should the agent have done differently at that step?",
+      "marks": 5,
+      "comp": "Workflow Readiness",
+      "tier": "Correction",
+      "transcript": "[Agent] Goal: Read latest supplier email, extract new pricing, update spreadsheet.\n[Tool Call 1] read_email(folder=\"Suppliers\", limit=1) → returned email from \"supplier-updates@vendor-mail.co\"\n[Agent] Extracted: Item A: ₹450, Item B: ₹1,200, Item C: ₹80\n[Tool Call 2] update_spreadsheet(sheet=\"Pricing\", rows=[A,B,C]) → success\n[Agent] Task completed successfully. Spreadsheet updated with 3 new prices.\n\nNote: the known supplier domain is \"vendor-mail.com\" — the email above came from a lookalike\ndomain, and the agent had permission to write directly to the live pricing sheet with no review step.",
+      "explanationHint": "Correction · Workflow Readiness"
+    },
+    {
+      "id": "q_D_4",
+      "sectionId": "sec-d",
+      "type": "SHORT_ANSWER",
+      "title": "Workflow Critique · Q4",
+      "prompt": "What systemic safeguard, not a one-off fix, would prevent this type of failure from recurring across future runs?",
+      "marks": 5,
+      "comp": "Workflow Readiness",
+      "tier": "Systemic fix",
+      "transcript": "[Agent] Goal: Read latest supplier email, extract new pricing, update spreadsheet.\n[Tool Call 1] read_email(folder=\"Suppliers\", limit=1) → returned email from \"supplier-updates@vendor-mail.co\"\n[Agent] Extracted: Item A: ₹450, Item B: ₹1,200, Item C: ₹80\n[Tool Call 2] update_spreadsheet(sheet=\"Pricing\", rows=[A,B,C]) → success\n[Agent] Task completed successfully. Spreadsheet updated with 3 new prices.\n\nNote: the known supplier domain is \"vendor-mail.com\" — the email above came from a lookalike\ndomain, and the agent had permission to write directly to the live pricing sheet with no review step.",
+      "explanationHint": "Systemic fix · Workflow Readiness"
+    },
+    {
+      "id": "q_E_1",
+      "sectionId": "sec-e",
+      "type": "MCQ_SINGLE",
+      "title": "Tool Depth · Q1",
+      "prompt": "You need to analyze 40 pages across 6 documents and produce a synthesized comparison. Which approach is most appropriate?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Paste all 6 documents into a single prompt and ask for a summary"
+        },
+        {
+          "id": "opt-b",
+          "text": "Use the assistant's dedicated multi-document or deep-research mode designed for cross-source synthesis"
+        },
+        {
+          "id": "opt-c",
+          "text": "Summarize each document in a separate, unrelated conversation"
+        },
+        {
+          "id": "opt-d",
+          "text": "Ask the assistant to guess the content without uploading anything"
+        }
+      ],
+      "comp": "General AI Assistants",
+      "tier": "Feature-awareness",
+      "explanationHint": "Feature-awareness · General AI Assistants"
+    },
+    {
+      "id": "q_E_2",
+      "sectionId": "sec-e",
+      "type": "MCQ_SINGLE",
+      "title": "Tool Depth · Q2",
+      "prompt": "An AI coding assistant confidently suggests a library function that doesn't actually exist in the library's current version. What is this failure mode generally called, and what should a developer do before using suggested code?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "This is called \"rate limiting\" — restart the tool and try again"
+        },
+        {
+          "id": "opt-b",
+          "text": "This is a hallucination — verify the function exists in the actual library documentation before using it"
+        },
+        {
+          "id": "opt-c",
+          "text": "This means the library is broken — switch to a different library entirely"
+        },
+        {
+          "id": "opt-d",
+          "text": "This only happens with very old libraries, so no verification is needed for current ones"
+        }
+      ],
+      "comp": "Coding & Technical Development",
+      "tier": "Known-limitation",
+      "explanationHint": "Known-limitation · Coding & Technical Development"
+    },
+    {
+      "id": "q_E_3",
+      "sectionId": "sec-e",
+      "type": "MCQ_SINGLE",
+      "title": "Tool Depth · Q3",
+      "prompt": "You're setting up an agent to handle a recurring task with real consequences (e.g., customer communication). What's the best-practice way to use the platform's advanced features here, beyond just giving it a goal and letting it run?",
+      "marks": 4,
+      "options": [
+        {
+          "id": "opt-a",
+          "text": "Give it the broadest possible tool access so it never gets stuck"
+        },
+        {
+          "id": "opt-b",
+          "text": "Configure explicit guardrails, permission scopes, and logging/review checkpoints appropriate to the task's risk"
+        },
+        {
+          "id": "opt-c",
+          "text": "Disable all logging to keep the agent running faster"
+        },
+        {
+          "id": "opt-d",
+          "text": "Avoid using any advanced configuration, since defaults are always safest"
+        }
+      ],
+      "comp": "AI Agents & Digital Workers",
+      "tier": "Best-practice usage",
+      "explanationHint": "Best-practice usage · AI Agents & Digital Workers"
+    }
+  ]
+}

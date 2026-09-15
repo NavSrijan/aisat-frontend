@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useRef, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { SAMPLE_AISAT_QUIZ } from '@/lib/quizData';
-import { CandidateLead, QuizQuestion, UserResponse } from '@/types/aisat';
-import { aisatApi } from '@/lib/api';
+import { CandidateLead, QuizQuestion, UserResponse, InteractionType } from '@/types/aisat';
+import { aisatApi, AttemptViewItem } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';
 import { QuestionPalette } from '@/components/quiz/QuestionPalette';
 import { SubmitModal } from '@/components/quiz/SubmitModal';
 import { TabSwitchWarningModal } from '@/components/quiz/TabSwitchWarningModal';
+import { RegistrationModal } from '@/components/landing/RegistrationModal';
 import { useExamIntegrity } from '@/hooks/useExamIntegrity';
 
 // Question Renderers
@@ -107,9 +108,20 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const resolvedParams = use(params);
   const quiz = SAMPLE_AISAT_QUIZ;
 
+  const paramId = resolvedParams.quizId;
+  const targetQuizId =
+    paramId && paramId.includes('-') && paramId.length === 36
+      ? paramId
+      : '03afd2a8-2294-4e37-b81b-722300f66d81';
+
+  const [mounted, setMounted] = useState(false);
   const [candidate, setCandidate] = useState<CandidateLead | null>(null);
   const [attemptId, setAttemptId] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<QuizQuestion[]>(SAMPLE_AISAT_QUIZ.questions);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [quizTitle, setQuizTitle] = useState<string>(SAMPLE_AISAT_QUIZ.title);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, UserResponse>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -122,6 +134,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [serverRemainingSec, setServerRemainingSec] = useState<number | null>(null);
   const [timerType, setTimerType] = useState<'PER_STUDENT' | 'GLOBAL'>('PER_STUDENT');
   const [maxViolationsConfig, setMaxViolationsConfig] = useState(3);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     violationCount,
@@ -151,22 +167,21 @@ export default function QuizPlayerPage({ params }: PageProps) {
         }
       }
 
-      const paramId = resolvedParams.quizId;
-      const targetQuizId =
-        paramId && paramId.includes('-') && paramId.length === 36
-          ? paramId
-          : 'a15a7000-0000-4000-8000-000000000001';
-
       const token = aisatApi.getToken();
       if (!token) {
-        // Must register with OTP first
-        router.push('/');
+        setIsLoading(false);
+        setIsAuthModalOpen(true);
         return;
       }
 
       try {
+        setIsLoading(true);
         const attemptRes = await aisatApi.startAttempt(targetQuizId);
         if (!isMounted) return;
+
+        if (attemptRes?.data?.quiz?.title) {
+          setQuizTitle(attemptRes.data.quiz.title);
+        }
 
         if (attemptRes?.data?.attempt) {
           setAttemptId(attemptRes.data.attempt.attemptId);
@@ -181,16 +196,19 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
           if (attemptRes.data.items && attemptRes.data.items.length > 0) {
             const backendItems = attemptRes.data.items;
-            const mergedQuestions = backendItems.map((bItem: any, idx: number) => {
+            const mergedQuestions = backendItems.map((bItem: AttemptViewItem, idx: number) => {
+              const stemObj = typeof bItem.stem === 'object' && bItem.stem !== null ? bItem.stem : null;
+              const promptText = stemObj ? (stemObj.text || (stemObj as Record<string, any>).prompt || '') : (typeof bItem.stem === 'string' ? bItem.stem : '');
+
               const template =
                 SAMPLE_AISAT_QUIZ.questions.find((q) => q.itemVersionId === bItem.itemVersionId) ||
-                SAMPLE_AISAT_QUIZ.questions.find((q) => q.prompt === bItem.stem) ||
+                SAMPLE_AISAT_QUIZ.questions.find((q) => q.prompt === promptText) ||
                 SAMPLE_AISAT_QUIZ.questions[idx] || {
                   id: bItem.itemVersionId || `q_${idx + 1}`,
-                  sectionId: 'sec-a',
+                  sectionId: stemObj?.sectionId || 'sec-a',
                   type: bItem.interactionType || 'MCQ_SINGLE',
                   title: `Question ${idx + 1}`,
-                  prompt: bItem.stem,
+                  prompt: promptText,
                   options: bItem.options,
                   marks: bItem.points || 4,
                 };
@@ -198,8 +216,18 @@ export default function QuizPlayerPage({ params }: PageProps) {
                 ...template,
                 id: template.id || bItem.itemVersionId || `q_${idx + 1}`,
                 itemVersionId: bItem.itemVersionId,
-                prompt: bItem.stem || template.prompt,
-                options: bItem.options && bItem.options.length > 0 ? bItem.options : template.options,
+                type: (bItem.interactionType || template.type || 'MCQ_SINGLE') as InteractionType,
+                title: template.title || `Question ${idx + 1}`,
+                prompt: promptText || template.prompt || '',
+                options: Array.isArray(bItem.options) && bItem.options.length > 0 ? bItem.options : template.options,
+                matchPairs: bItem.options?.matchPairs || (bItem.options?.leftItems ? bItem.options : template.matchPairs),
+                marks: bItem.points ?? template.marks ?? 4,
+                context: (stemObj?.context && typeof stemObj.context === 'string') ? stemObj.context : template.context,
+                tier: (stemObj?.tier && typeof stemObj.tier === 'string') ? stemObj.tier : template.tier,
+                comp: (stemObj?.comp && typeof stemObj.comp === 'string') ? stemObj.comp : template.comp,
+                transcript: (stemObj?.transcript && typeof stemObj.transcript === 'string') ? stemObj.transcript : template.transcript,
+                codeSnippet: stemObj?.code || template.codeSnippet,
+                language: stemObj?.language || template.language,
               };
             });
             setQuestions(mergedQuestions);
@@ -226,8 +254,23 @@ export default function QuizPlayerPage({ params }: PageProps) {
             }
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Backend startAttempt error:', err);
+        if (isMounted) {
+          const errMsg = err?.message || '';
+          if (
+            errMsg.includes('401') ||
+            errMsg.toLowerCase().includes('unauthorized') ||
+            errMsg.toLowerCase().includes('token')
+          ) {
+            sessionStorage.removeItem('aisat_token');
+            setIsAuthModalOpen(true);
+          } else {
+            setLoadError(errMsg || 'Failed to start quiz attempt');
+          }
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
 
@@ -237,12 +280,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
     };
   }, [resolvedParams.quizId]);
 
-  const currentQuestion: QuizQuestion = questions[currentIndex] || questions[0];
-  const activeSectionId = currentQuestion.sectionId;
+  const currentQuestion: QuizQuestion | undefined = questions[currentIndex] || questions[0];
+  const activeSectionId = currentQuestion?.sectionId || 'sec-a';
 
-  const currentResponse = responses[currentQuestion.id] || {
-    questionId: currentQuestion.id,
-    type: currentQuestion.type,
+  const currentResponse = (currentQuestion ? responses[currentQuestion.id] : undefined) || {
+    questionId: currentQuestion?.id || '',
+    type: currentQuestion?.type || 'MCQ_SINGLE',
     answer: null,
     isMarkedForReview: false,
     timeSpentSeconds: 0,
@@ -318,24 +361,35 @@ export default function QuizPlayerPage({ params }: PageProps) {
     }
   };
 
-  const handleConfirmSubmit = useCallback(async (submitReason?: string) => {
+  const handleConfirmSubmit = useCallback(async (submitReason?: any) => {
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
     setIsSubmitting(true);
     setSubmitError(null);
 
+    const safeReason = typeof submitReason === 'string' ? submitReason : 'USER_SUBMIT';
+
     const paramId = resolvedParams.quizId;
     const targetQuizId =
       paramId && paramId.includes('-') && paramId.length === 36
         ? paramId
-        : 'a15a7000-0000-4000-8000-000000000001';
+        : '03afd2a8-2294-4e37-b81b-722300f66d81';
 
     let backendResult: any = null;
 
     try {
       if (attemptId) {
         const answersPayload = questions
-          .filter((q) => !!q.itemVersionId)
+          .filter((q) => {
+            const r = responses[q.id];
+            return (
+              !!q.itemVersionId &&
+              r?.answer !== null &&
+              r?.answer !== undefined &&
+              r?.answer !== '' &&
+              (!Array.isArray(r.answer) || r.answer.length > 0)
+            );
+          })
           .map((q) => {
             const r = responses[q.id];
             const formatted = formatAnswerForBackend(q.type, r?.answer);
@@ -346,7 +400,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
             };
           });
 
-        const submitRes = await aisatApi.submitAttempt(attemptId, answersPayload, submitReason || 'USER_SUBMIT');
+        const submitRes = await aisatApi.submitAttempt(attemptId, answersPayload, safeReason);
         backendResult = submitRes.data;
       }
 
@@ -356,7 +410,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
         candidate,
         result: backendResult,
         responses,
-        submitReason: submitReason || 'USER_SUBMIT',
+        submitReason: safeReason,
         submittedAt: new Date().toISOString(),
       };
       sessionStorage.setItem('aisat_final_submission', JSON.stringify(submissionPayload));
@@ -367,21 +421,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
       router.push('/test/completed');
     } catch (err: any) {
       console.error('Failed to submit attempt to backend:', err);
-      setSubmitError(err?.message || 'Submission failed');
-      const fallbackPayload = {
-        quizId: targetQuizId,
-        attemptId,
-        candidate,
-        responses,
-        submitReason: submitReason || 'USER_SUBMIT',
-        submittedAt: new Date().toISOString(),
-        error: err?.message,
-      };
-      sessionStorage.setItem('aisat_final_submission', JSON.stringify(fallbackPayload));
+      setSubmitError(err?.message || 'Failed to submit quiz. Please check your internet connection and try again.');
       setIsSubmitting(false);
       isSubmittingRef.current = false;
-      setIsSubmitModalOpen(false);
-      router.push('/test/completed');
+      setIsSubmitModalOpen(true);
     }
   }, [attemptId, candidate, questions, responses, resolvedParams.quizId, router]);
 
@@ -452,12 +495,99 @@ export default function QuizPlayerPage({ params }: PageProps) {
     (r) => r.answer !== null && r.answer !== '' && (!Array.isArray(r.answer) || r.answer.length > 0)
   ).length;
 
+  const activeSections = React.useMemo(() => {
+    const presentSectionIds = new Set(questions.map((q) => q.sectionId || 'sec-a'));
+    const matched = quiz.sections.filter((s) => presentSectionIds.has(s.id));
+    if (matched.length > 0) return matched;
+    return [
+      {
+        id: 'sec-a',
+        title: 'Section A · Knowledge & Interaction',
+        description: 'Quiz Questions',
+        durationMinutes: quiz.totalDurationMinutes || 45,
+        questionIds: questions.map((q) => q.id),
+      },
+    ];
+  }, [questions, quiz.sections, quiz.totalDurationMinutes]);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] text-gray-700">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-base font-medium">Preparing your assessment session...</p>
+        <p className="text-xs text-gray-500 mt-1">Connecting to assessment engine</p>
+      </div>
+    );
+  }
+
+  if (isAuthModalOpen || !aisatApi.getToken()) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] px-4">
+        <div className="max-w-md w-full text-center space-y-3 mb-6">
+          <div className="w-12 h-12 bg-yellow-400 rounded-xl mx-auto flex items-center justify-center font-bold text-gray-950 text-xl shadow-sm">
+            A
+          </div>
+          <h1 className="text-xl font-bold text-gray-900">AISAT Assessment Platform</h1>
+          <p className="text-sm text-gray-600">Please verify your details to launch your assessment session.</p>
+        </div>
+        <RegistrationModal
+          isOpen={true}
+          onClose={() => router.push('/')}
+          quizId={targetQuizId}
+          onSuccess={(newToken, newCandidate) => {
+            setCandidate(newCandidate);
+            setIsAuthModalOpen(false);
+            window.location.reload();
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] px-4">
+        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 max-w-md w-full text-center space-y-4">
+          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
+            !
+          </div>
+          <h2 className="text-lg font-bold text-gray-900">Unable to Start Assessment</h2>
+          <p className="text-sm text-gray-600">{loadError}</p>
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => router.push('/')}
+              className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition-colors"
+            >
+              Go to Home
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading || !attemptId || questions.length === 0 || !currentQuestion) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] text-gray-700">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-base font-medium">Preparing your assessment session...</p>
+        <p className="text-xs text-gray-500 mt-1">Connecting to assessment engine</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F6F9] text-gray-900">
       {/* Quiz Sticky Header */}
       <QuizHeader
-        title={quiz.title}
-        sections={quiz.sections}
+        title={quizTitle || quiz.title}
+        sections={activeSections}
         activeSectionId={activeSectionId}
         onSelectSection={handleSelectSection}
         durationMinutes={quiz.totalDurationMinutes}
@@ -465,7 +595,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
         serverRemainingSec={serverRemainingSec}
         timerType={timerType}
         onTimeExpired={() => handleConfirmSubmit('TIME_EXPIRED')}
-        onSubmitClick={() => setIsSubmitModalOpen(true)}
+        onSubmitClick={() => {
+          setSubmitError(null);
+          setIsSubmitModalOpen(true);
+        }}
         isSaving={isSaving}
         candidate={candidate}
         answeredCount={answeredCount}
@@ -630,11 +763,15 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
       <SubmitModal
         isOpen={isSubmitModalOpen}
-        onClose={() => setIsSubmitModalOpen(false)}
-        onConfirmSubmit={handleConfirmSubmit}
+        onClose={() => {
+          setSubmitError(null);
+          setIsSubmitModalOpen(false);
+        }}
+        onConfirmSubmit={() => handleConfirmSubmit('USER_SUBMIT')}
         questions={questions}
         responses={responses}
         isSubmitting={isSubmitting}
+        submitError={submitError}
       />
 
       <TabSwitchWarningModal

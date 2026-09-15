@@ -29,6 +29,31 @@ export default function TestCompletedPage() {
   const candidate = submission?.candidate;
   const result = submission?.result;
 
+  const earnedScore =
+    result?.attempt?.score !== undefined
+      ? result.attempt.score
+    : result?.summary?.earnedPoints !== undefined
+    ? result.summary.earnedPoints
+    : result?.score;
+
+  const maxScore =
+    result?.attempt?.maxScore !== undefined
+      ? result.attempt.maxScore
+    : result?.summary?.maxScore !== undefined
+    ? result.summary.maxScore
+    : result?.maxScore;
+
+  const percentage =
+    typeof maxScore === 'number' && maxScore > 0 && typeof earnedScore === 'number'
+      ? Math.round((earnedScore / maxScore) * 100)
+      : result?.summary?.percentage !== undefined
+      ? result.summary.percentage
+      : null;
+
+  const correctCount = Array.isArray(result?.items)
+    ? result.items.filter((item: any) => item.isCorrect).length
+    : null;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between">
       {/* Header */}
@@ -85,14 +110,24 @@ export default function TestCompletedPage() {
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="text-xs text-gray-500 font-medium">Score Earned</div>
                 <div className="text-xl font-black text-gray-950 mt-0.5">
-                  {result.summary?.earnedPoints ?? result.score ?? '—'} / {result.summary?.maxScore ?? result.maxScore ?? '—'}
+                  {earnedScore !== undefined && earnedScore !== null ? earnedScore : '—'} / {maxScore !== undefined && maxScore !== null ? maxScore : '—'}
                 </div>
+                {correctCount !== null && (
+                  <div className="text-[11px] text-gray-500 mt-1">
+                    {correctCount} of {result.items.length} questions correct
+                  </div>
+                )}
               </div>
               <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                 <div className="text-xs text-gray-500 font-medium">Percentage</div>
-                <div className="text-xl font-black text-emerald-600 mt-0.5">
-                  {result.summary?.percentage !== undefined ? `${result.summary.percentage}%` : 'Recorded'}
+                <div className={`text-xl font-black mt-0.5 ${percentage !== null && percentage >= 75 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {percentage !== null ? `${percentage}%` : 'Recorded'}
                 </div>
+                {result.attempt?.passed !== undefined && (
+                  <div className="text-[11px] font-semibold mt-1 text-gray-500">
+                    Status: {result.attempt.passed ? 'Passed' : 'Completed'}
+                  </div>
+                )}
               </div>
             </div>
           </div>

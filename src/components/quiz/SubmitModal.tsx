@@ -11,6 +11,7 @@ interface SubmitModalProps {
   questions: QuizQuestion[];
   responses: Record<string, UserResponse>;
   isSubmitting: boolean;
+  submitError?: string | null;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -20,6 +21,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   questions,
   responses,
   isSubmitting,
+  submitError,
 }) => {
   if (!isOpen) return null;
 
@@ -77,6 +79,16 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             </div>
           )}
 
+          {submitError && (
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold">Submission error:</span> {submitError}
+                <div className="mt-1 text-[11px] text-red-600">Please check your connection and click Retry below.</div>
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-gray-500 text-center">
             Are you sure you want to end this test session? Your answers will be submitted.
           </p>
@@ -91,12 +103,17 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             </button>
             <button
               type="button"
-              onClick={onConfirmSubmit}
+              onClick={() => onConfirmSubmit()}
               disabled={isSubmitting}
               className="w-1/2 btn-capabl py-2.5 rounded-lg text-xs font-bold text-black flex items-center justify-center gap-1.5 cursor-pointer shadow-xs disabled:opacity-50"
             >
               {isSubmitting ? (
                 <span>Submitting...</span>
+              ) : submitError ? (
+                <>
+                  <span>Retry Submission</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </>
               ) : (
                 <>
                   <span>Submit Test</span>

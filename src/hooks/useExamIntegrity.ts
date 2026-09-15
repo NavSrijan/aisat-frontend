@@ -36,6 +36,7 @@ export function useExamIntegrity({
   useEffect(() => {
     if (!attemptId) return;
     try {
+      const isAlreadySubmitted = sessionStorage.getItem(`aisat_submitted_${attemptId}`) === 'true';
       const saved = sessionStorage.getItem(`aisat_violations_${attemptId}`);
       if (saved) {
         const count = parseInt(saved, 10);
@@ -44,10 +45,13 @@ export function useExamIntegrity({
           setViolationCount(count);
           if (count >= maxViolations) {
             setIsLimitExceeded(true);
-            setIsWarningOpen(true);
-            if (onLimitExceededRef.current && !limitExceededTriggeredRef.current) {
-              limitExceededTriggeredRef.current = true;
-              onLimitExceededRef.current();
+            limitExceededTriggeredRef.current = true;
+            // Only re-open warning modal if attempt was not already submitted
+            if (!isAlreadySubmitted) {
+              setIsWarningOpen(true);
+              if (onLimitExceededRef.current) {
+                onLimitExceededRef.current();
+              }
             }
           }
         }
@@ -87,6 +91,11 @@ export function useExamIntegrity({
       setIsLimitExceeded(true);
       if (onLimitExceededRef.current && !limitExceededTriggeredRef.current) {
         limitExceededTriggeredRef.current = true;
+        if (attemptId) {
+          try {
+            sessionStorage.setItem(`aisat_submitted_${attemptId}`, 'true');
+          } catch (_) {}
+        }
         onLimitExceededRef.current();
       }
     }

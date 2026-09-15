@@ -43,7 +43,7 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
   answeredCount = 0,
   totalQuestions = 40,
 }) => {
-  const computeRemaining = () => {
+  const computeRemaining = React.useCallback(() => {
     if (serverDeadlineAt) {
       const diff = Math.ceil((new Date(serverDeadlineAt).getTime() - Date.now()) / 1000);
       return Math.max(0, diff);
@@ -52,7 +52,7 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
       return serverRemainingSec;
     }
     return durationMinutes * 60;
-  };
+  }, [serverDeadlineAt, serverRemainingSec, durationMinutes]);
 
   const [secondsRemaining, setSecondsRemaining] = useState(computeRemaining());
   const secondsRemainingRef = React.useRef(secondsRemaining);
@@ -67,7 +67,7 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
     const rem = computeRemaining();
     secondsRemainingRef.current = rem;
     setSecondsRemaining(rem);
-  }, [serverDeadlineAt, serverRemainingSec, durationMinutes]);
+  }, [computeRemaining]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -90,7 +90,7 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [serverDeadlineAt]);
+  }, [serverDeadlineAt, serverRemainingSec, durationMinutes]);
 
   const formatTime = (totalSecs: number) => {
     const hours = Math.floor(totalSecs / 3600);

@@ -6,6 +6,8 @@ import { ArrowRight, ArrowLeft, RefreshCw, KeyRound, CheckCircle2 } from 'lucide
 import { CandidateLead } from '@/types/aisat';
 import { aisatApi } from '@/lib/api';
 
+const IS_DEV = process.env.NODE_ENV !== 'production';
+
 interface HeroSectionProps {
   onOpenRegister: () => void;
 }
@@ -91,12 +93,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
         ...formData,
         reqId,
         otp: otp.trim(),
-        quizId: 'a15a7000-0000-4000-8000-000000000001',
+        quizId: '03afd2a8-2294-4e37-b81b-722300f66d81',
       });
       aisatApi.setToken(response.data.token);
       sessionStorage.setItem('aisat_candidate', JSON.stringify(response.data.candidate));
 
-      const targetQuizId = response.data.quizId || 'a15a7000-0000-4000-8000-000000000001';
+      const targetQuizId = response.data.quizId || '03afd2a8-2294-4e37-b81b-722300f66d81';
       router.push(`/test/${targetQuizId}`);
     } catch (err: any) {
       console.error('Registration/OTP failed:', err);
@@ -108,6 +110,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
 
   const handleFillDemo = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!IS_DEV) return;
     setFormData({
       name: 'Rahul Sharma',
       email: 'rahul.sharma@example.com',
@@ -212,7 +215,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                       : `Code sent to +91 ${formData.phoneNumber}`}
                   </p>
                 </div>
-                {step === 'DETAILS' && (
+                {IS_DEV && step === 'DETAILS' && (
                   <button
                     type="button"
                     onClick={handleFillDemo}
@@ -401,13 +404,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                   </div>
 
                   <div className="flex items-center justify-between text-xs pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setOtp('123456')}
-                      className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-2 cursor-pointer"
-                    >
-                      Use Dev OTP (123456)
-                    </button>
+                    {IS_DEV ? (
+                      <button
+                        type="button"
+                        onClick={() => setOtp('123456')}
+                        className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-2 cursor-pointer"
+                      >
+                        Use Dev OTP (123456)
+                      </button>
+                    ) : (
+                      <span />
+                    )}
 
                     <button
                       type="button"
