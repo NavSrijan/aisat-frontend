@@ -19,14 +19,29 @@ export function useExamIntegrity({
   const [violationCount, setViolationCount] = useState<number>(0);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
   const [lastAwayDurationMs, setLastAwayDurationMs] = useState(0);
+  const [lastViolationType, setLastViolationType] = useState<'TAB_SWITCH' | 'WINDOW_BLUR' | 'FULLSCREEN_EXIT'>('TAB_SWITCH');
   const [isLimitExceeded, setIsLimitExceeded] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const violationCountRef = useRef<number>(0);
   const hiddenTimeRef = useRef<number | null>(null);
-  const hiddenSourceRef = useRef<'TAB_SWITCH' | 'WINDOW_BLUR'>('TAB_SWITCH');
+  const hiddenSourceRef = useRef<'TAB_SWITCH' | 'WINDOW_BLUR' | 'FULLSCREEN_EXIT'>('TAB_SWITCH');
   const lastProcessedTimeRef = useRef<number>(0);
   const limitExceededTriggeredRef = useRef<boolean>(false);
   const onLimitExceededRef = useRef(onLimitExceeded);
+  const hasEnteredFullscreenRef = useRef<boolean>(false);
+
+  const enterFullscreen = useCallback(async () => {
+    try {
+      if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen();
+        hasEnteredFullscreenRef.current = true;
+        setIsFullscreen(true);
+      }
+    } catch (err) {
+      console.warn('Fullscreen request blocked or not permitted without user gesture:', err);
+    }
+  }, []);
 
   useEffect(() => {
     onLimitExceededRef.current = onLimitExceeded;
@@ -61,13 +76,14 @@ export function useExamIntegrity({
     }
   }, [attemptId, maxViolations]);
 
-  const recordViolation = useCallback((eventType: 'TAB_SWITCH' | 'WINDOW_BLUR', durationMs: number) => {
+  const recordViolation = useCallback((eventType: 'TAB_SWITCH' | 'WINDOW_BLUR' | 'FULLSCREEN_EXIT', durationMs: number) => {
     if (!enabled) return;
 
     const next = violationCountRef.current + 1;
     violationCountRef.current = next;
     setViolationCount(next);
     setLastAwayDurationMs(durationMs);
+    setLastViolationType(eventType);
     setIsWarningOpen(true);
 
     if (attemptId) {
@@ -101,6 +117,7 @@ export function useExamIntegrity({
     }
   }, [attemptId, enabled, maxViolations]);
 
+  // Handle Visibility and Window Blur/Focus
   useEffect(() => {
     if (!enabled) return;
 
@@ -142,26 +159,51 @@ export function useExamIntegrity({
       }
     };
 
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = Boolean(document.fullscreenElement);
+      setIsFullscreen(isCurrentlyFullscreen);
+
+      if (isCurrentlyFullscreen) {
+        hasEnteredFullscreenRef.current = true;
+      } else {
+        // Exited fullscreen after having entered it
+        if (hasEnteredFullscreenRef.current && !isLimitExceeded) {
+          const now = Date.now();
+          if (now - lastProcessedTimeRef.current > 1500) {
+            lastProcessedTimeRef.current = now;
+            recordViolation('FULLSCREEN_EXIT', 0);
+          }
+        }
+      }
+    };
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('blur', handleWindowBlur);
     window.addEventListener('focus', handleWindowFocus);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('focus', handleWindowFocus);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
-  }, [enabled, recordViolation]);
+  }, [enabled, isLimitExceeded, recordViolation]);
 
   const closeWarning = useCallback(() => {
     setIsWarningOpen(false);
-  }, []);
+    // Re-enter fullscreen when resuming from warning
+    enterFullscreen();
+  }, [enterFullscreen]);
 
   return {
     violationCount,
     isWarningOpen,
     lastAwayDurationMs,
+    lastViolationType,
     isLimitExceeded,
+    isFullscreen,
+    enterFullscreen,
     closeWarning,
     maxViolations,
   };

@@ -9,6 +9,7 @@ interface TabSwitchWarningModalProps {
   violationCount: number;
   maxViolations: number;
   awayDurationMs?: number;
+  violationType?: 'TAB_SWITCH' | 'WINDOW_BLUR' | 'FULLSCREEN_EXIT';
   isSubmitting?: boolean;
   submitError?: string | null;
   onRetrySubmit?: () => void;
@@ -20,6 +21,7 @@ export const TabSwitchWarningModal: React.FC<TabSwitchWarningModalProps> = ({
   violationCount,
   maxViolations,
   awayDurationMs,
+  violationType = 'TAB_SWITCH',
   isSubmitting = false,
   submitError = null,
   onRetrySubmit,
@@ -29,6 +31,23 @@ export const TabSwitchWarningModal: React.FC<TabSwitchWarningModalProps> = ({
   const isLastWarning = violationCount === maxViolations - 1;
   const isLimitReached = violationCount >= maxViolations;
   const secondsAway = awayDurationMs ? Math.ceil(awayDurationMs / 1000) : null;
+
+  const getTitle = () => {
+    if (isLimitReached) return 'Violation Limit Exceeded!';
+    if (violationType === 'FULLSCREEN_EXIT') return 'Warning: Fullscreen Exited';
+    if (violationType === 'WINDOW_BLUR') return 'Warning: Window Focus Lost';
+    return 'Warning: Tab Switch Detected';
+  };
+
+  const getDescription = () => {
+    if (isLimitReached) {
+      return 'You have exceeded the maximum allowed integrity violations. Your assessment is being submitted automatically.';
+    }
+    if (violationType === 'FULLSCREEN_EXIT') {
+      return 'You have exited fullscreen mode. Staying in fullscreen throughout the assessment is required and monitored.';
+    }
+    return 'You have navigated away from the assessment window. Leaving the active test tab is strictly recorded as an integrity violation.';
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
@@ -53,16 +72,12 @@ export const TabSwitchWarningModal: React.FC<TabSwitchWarningModalProps> = ({
 
         {/* Title */}
         <h3 className="text-lg font-bold text-gray-900 mb-2">
-          {isLimitReached
-            ? 'Violation Limit Exceeded!'
-            : 'Warning: Tab Switch Detected'}
+          {getTitle()}
         </h3>
 
         {/* Description */}
         <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-          {isLimitReached
-            ? 'You have exceeded the maximum number of tab switches. Your assessment is being submitted automatically.'
-            : 'You have navigated away from the assessment window. Leaving the active test tab is strictly recorded as an integrity violation.'}
+          {getDescription()}
         </p>
 
         {secondsAway && secondsAway > 0 && !isLimitReached && (

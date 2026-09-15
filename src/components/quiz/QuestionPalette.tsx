@@ -6,14 +6,12 @@ import { QuizQuestion, UserResponse } from '@/types/aisat';
 interface QuestionPaletteProps {
   questions: QuizQuestion[];
   currentIndex: number;
-  onSelectIndex: (index: number) => void;
   responses: Record<string, UserResponse>;
 }
 
 export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
   questions,
   currentIndex,
-  onSelectIndex,
   responses,
 }) => {
   let answeredCount = 0;
@@ -35,7 +33,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <h4 className="font-extrabold text-sm text-gray-950">
-              Question Palette
+              Question Progress
             </h4>
           </div>
           <span className="text-xs text-gray-500 font-bold font-mono">
@@ -55,7 +53,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
         </div>
       </div>
 
-      {/* Grid of numbers - clean layout without clipping */}
+      {/* Grid of numbers - read-only indicators (jumping disabled) */}
       <div className="p-1">
         <div className="grid grid-cols-6 gap-2">
           {questions.map((q, idx) => {
@@ -64,7 +62,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
             const isAnswered = res?.answer !== undefined && res?.answer !== null && res?.answer !== '' && (!Array.isArray(res?.answer) || res?.answer.length > 0);
             const isMarked = res?.isMarkedForReview;
 
-            let badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100 hover:border-gray-300';
+            let badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200';
             if (isMarked) {
               badgeStyle = 'bg-purple-100 text-purple-950 border-purple-400 font-bold';
             } else if (isAnswered) {
@@ -72,10 +70,9 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
             }
 
             return (
-              <button
+              <div
                 key={q.id}
-                onClick={() => onSelectIndex(idx)}
-                className={`h-9 w-full rounded-lg text-xs font-bold flex items-center justify-center border transition-all cursor-pointer relative ${badgeStyle} ${
+                className={`h-9 w-full rounded-lg text-xs font-bold flex items-center justify-center border transition-all select-none relative ${badgeStyle} ${
                   isCurrent
                     ? 'ring-2 ring-[#011C40] ring-offset-1 font-black bg-gray-900 text-white border-gray-900 z-10'
                     : ''
@@ -85,7 +82,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
                 {isMarked && (
                   <span className="w-2 h-2 rounded-full bg-purple-600 absolute top-1 right-1 border border-white" />
                 )}
-              </button>
+              </div>
             );
           })}
         </div>

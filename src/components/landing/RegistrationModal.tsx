@@ -352,6 +352,12 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
       aisatApi.setToken(response.data.token);
       sessionStorage.setItem('aisat_candidate', JSON.stringify(response.data.candidate));
       
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (_) {}
+
       if (onSuccess) {
         onSuccess(response.data.token, response.data.candidate);
         onClose();

@@ -14,7 +14,7 @@ interface QuizHeaderProps {
   title: string;
   sections: QuizSection[];
   activeSectionId: string;
-  onSelectSection: (sectionId: string) => void;
+  onSelectSection?: (sectionId: string) => void;
   durationMinutes: number;
   serverDeadlineAt?: string | null;
   serverRemainingSec?: number | null;
@@ -216,22 +216,21 @@ export const QuizHeader: React.FC<QuizHeaderProps> = ({
               const isActive = sec.id === activeSectionId;
               const sectionLabel = sec.title.replace(/^Section\s*/i, '');
               return (
-                <button
+                <div
                   key={sec.id}
-                  onClick={() => onSelectSection(sec.id)}
-                  className={`px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer border ${
+                  className={`px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 select-none border ${
                     isActive
                       ? 'bg-[#FFCC00] text-black border-[#FFCC00] font-bold shadow-xs'
-                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100 hover:text-black'
+                      : 'bg-white text-gray-600 border-gray-200'
                   }`}
                 >
                   <span className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-black ${
-                    isActive ? 'bg-black text-amber-300' : 'bg-gray-100 text-gray-700'
+                    isActive ? 'bg-black text-amber-300' : 'bg-gray-100 text-gray-600'
                   }`}>
                     {String.fromCharCode(65 + idx)}
                   </span>
                   <span>{sectionLabel.split('·')[0].trim()}</span>
-                </button>
+                </div>
               );
             })}
           </div>

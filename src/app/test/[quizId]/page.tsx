@@ -26,6 +26,7 @@ import {
   ChevronRight,
   Bookmark,
   RotateCcw,
+  Maximize2,
 } from 'lucide-react';
 
 // Helper to format frontend state to backend AnswerPayload schema
@@ -143,6 +144,9 @@ export default function QuizPlayerPage({ params }: PageProps) {
     violationCount,
     isWarningOpen,
     lastAwayDurationMs,
+    lastViolationType,
+    isFullscreen,
+    enterFullscreen,
     closeWarning,
     maxViolations,
   } = useExamIntegrity({
@@ -184,9 +188,15 @@ export default function QuizPlayerPage({ params }: PageProps) {
         }
 
         if (attemptRes?.data?.attempt) {
-          setAttemptId(attemptRes.data.attempt.attemptId);
+          const loadedAttemptId = attemptRes.data.attempt.attemptId;
+          setAttemptId(loadedAttemptId);
           setServerDeadlineAt(attemptRes.data.attempt.deadlineAt);
           setServerRemainingSec(attemptRes.data.attempt.remainingSec);
+          if (attemptRes.data.attempt.status === 'IN_PROGRESS') {
+            try {
+              sessionStorage.removeItem(`aisat_submitted_${loadedAttemptId}`);
+            } catch (_) {}
+          }
           if (attemptRes.data.quiz?.timerType) {
             setTimerType(attemptRes.data.quiz.timerType as 'PER_STUDENT' | 'GLOBAL');
           }
@@ -351,13 +361,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const handleSelectSection = (sectionId: string) => {
-    const targetIdx = questions.findIndex((q) => q.sectionId === sectionId);
-    if (targetIdx !== -1) {
-      setCurrentIndex(targetIdx);
     }
   };
 
@@ -584,12 +587,27 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F6F9] text-gray-900">
+      {/* Fullscreen Required Banner */}
+      {!isFullscreen && (
+        <div className="bg-amber-400 text-gray-950 px-4 py-2 text-xs font-bold flex items-center justify-between shadow-xs sticky top-0 z-50">
+          <div className="flex items-center gap-2">
+            <Maximize2 className="w-4 h-4 text-gray-950 shrink-0" />
+            <span>Assessment must be taken in Fullscreen mode. Please enter fullscreen to avoid integrity violations.</span>
+          </div>
+          <button
+            onClick={() => enterFullscreen()}
+            className="bg-gray-950 hover:bg-black text-white px-3 py-1 rounded-md text-xs font-bold cursor-pointer transition-colors shrink-0 ml-3"
+          >
+            Enter Fullscreen
+          </button>
+        </div>
+      )}
+
       {/* Quiz Sticky Header */}
       <QuizHeader
         title={quizTitle || quiz.title}
         sections={activeSections}
         activeSectionId={activeSectionId}
-        onSelectSection={handleSelectSection}
         durationMinutes={quiz.totalDurationMinutes}
         serverDeadlineAt={serverDeadlineAt}
         serverRemainingSec={serverRemainingSec}
@@ -753,7 +771,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
             <QuestionPalette
               questions={questions}
               currentIndex={currentIndex}
-              onSelectIndex={(idx) => setCurrentIndex(idx)}
               responses={responses}
             />
           </div>
@@ -780,6 +797,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
         violationCount={violationCount}
         maxViolations={maxViolations}
         awayDurationMs={lastAwayDurationMs}
+        violationType={lastViolationType}
         isSubmitting={isSubmitting}
         submitError={submitError}
         onRetrySubmit={() => handleConfirmSubmit('AUTO_SUBMIT_TAB_SWITCH')}
