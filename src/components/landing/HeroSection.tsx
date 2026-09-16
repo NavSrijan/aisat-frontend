@@ -2,18 +2,31 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ArrowLeft, RefreshCw, KeyRound, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowRight,
+  ArrowLeft,
+  RefreshCw,
+  KeyRound,
+  CheckCircle2,
+  Clock,
+  FileQuestion,
+  ShieldAlert,
+  Save,
+  Check
+} from 'lucide-react';
 import { CandidateLead } from '@/types/aisat';
 import { aisatApi } from '@/lib/api';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
 interface HeroSectionProps {
-  onOpenRegister: () => void;
+  quizId?: string;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
   const router = useRouter();
+  const effectiveQuizId = quizId || '03afd2a8-2294-4e37-b81b-722300f66d81';
+
   const [step, setStep] = useState<'DETAILS' | 'OTP'>('DETAILS');
   const [formData, setFormData] = useState<CandidateLead>({
     name: '',
@@ -46,7 +59,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
     e.preventDefault();
     setError(null);
     if (!formData.name.trim() || !formData.email.trim() || !formData.phoneNumber.trim() || !formData.college.trim()) {
-      setError('Please fill in all mandatory fields.');
+      setError('Please fill in all required fields.');
       return;
     }
 
@@ -58,7 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
       setResendTimer(30);
     } catch (err: any) {
       console.error('Failed to send OTP:', err);
-      setError(err?.message || 'Failed to send OTP. Please check your number.');
+      setError(err?.message || 'Failed to send OTP. Please check your phone number.');
     } finally {
       setLoading(false);
     }
@@ -93,12 +106,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
         ...formData,
         reqId,
         otp: otp.trim(),
-        quizId: '03afd2a8-2294-4e37-b81b-722300f66d81',
+        quizId: effectiveQuizId,
       });
       aisatApi.setToken(response.data.token);
       sessionStorage.setItem('aisat_candidate', JSON.stringify(response.data.candidate));
 
-      const targetQuizId = response.data.quizId || '03afd2a8-2294-4e37-b81b-722300f66d81';
+      const targetQuizId = response.data.quizId || effectiveQuizId;
       router.push(`/test/${targetQuizId}`);
     } catch (err: any) {
       console.error('Registration/OTP failed:', err);
@@ -126,103 +139,106 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
   };
 
   return (
-    <section className="bg-white pt-8 pb-16 border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Main 2-Column Hero: Left Headline/Copy, Right Quick Registration Card */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start mb-14">
+    <section className="py-8 sm:py-12 bg-gray-50/50 min-h-[calc(100vh-8rem)] flex items-center">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
-          {/* Left Column: Heading, Subtitle, Key Value Props */}
-          <div className="lg:col-span-7 space-y-6 pt-2">
-            
-            {/* Main Headline with doodle */}
+          {/* Left: Test Info & Instructions */}
+          <div className="lg:col-span-6 space-y-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-[#011C40] text-xs font-bold mb-4">
-                <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
-                AISAT 2026 • Live All India Assessment
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold mb-3">
+                <span>AISAT 2026</span>
+                <span>•</span>
+                <span>All India Student Assessment Test</span>
               </div>
-              
-              <h1 className="capabl-hero-heading relative">
-                <span className="relative inline-block">
-                  Be Capabl
-                  <img
-                    src="https://cdn.prod.website-files.com/66c33148d7db732dc0f5cb7d/66d04e567e2b3bd49fa8848d_line.png"
-                    alt=""
-                    className="absolute -bottom-2.5 left-0 w-full h-3 object-contain pointer-events-none"
-                  />
-                </span>{' '}
-                - Make. Build.
-                <br />
-                Get things done!
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+                Engineering Assessment Portal
               </h1>
+              <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                Standardized evaluation covering Quantitative Aptitude, Core Computer Science &amp; Engineering Concepts, and Algorithmic Problem Solving.
+              </p>
             </div>
 
-            {/* Subtext */}
-            <p className="capabl-subtext max-w-xl text-base text-gray-600 leading-relaxed">
-              Hands-on offline workshops &amp; real-world projects. Evaluate your engineering problem solving, system design, and agentic AI readiness today.
-            </p>
-
-            {/* Quick Feature Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                <div className="w-5 h-5 rounded-md bg-[#FFCC00] text-black font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  ✓
+            {/* Test Stats Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3.5 rounded-xl bg-white border border-gray-200 shadow-2xs">
+                <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+                  <Clock className="w-4 h-4 text-amber-500" />
+                  <span>45 Minutes</span>
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">40 High-Yield Questions</div>
-                  <div className="text-[11px] text-gray-500">Aptitude, Core CS &amp; Agentic AI</div>
-                </div>
+                <p className="text-xs text-gray-500 mt-1">Timed Assessment</p>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                <div className="w-5 h-5 rounded-md bg-[#011C40] text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                  ⚡
+              <div className="p-3.5 rounded-xl bg-white border border-gray-200 shadow-2xs">
+                <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+                  <FileQuestion className="w-4 h-4 text-blue-500" />
+                  <span>40 Questions</span>
                 </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">Instant Benchmark Report</div>
-                  <div className="text-[11px] text-gray-500">Real-time evaluation &amp; score</div>
+                <p className="text-xs text-gray-500 mt-1">3 Sections</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-white border border-gray-200 shadow-2xs">
+                <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+                  <ShieldAlert className="w-4 h-4 text-red-500" />
+                  <span>Proctored</span>
                 </div>
+                <p className="text-xs text-gray-500 mt-1">Fullscreen Enforced</p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-white border border-gray-200 shadow-2xs">
+                <div className="flex items-center gap-2 text-gray-900 font-semibold text-sm">
+                  <Save className="w-4 h-4 text-emerald-500" />
+                  <span>Auto-Save</span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">Real-time sync</p>
               </div>
             </div>
 
-            {/* Secondary Link */}
-            <div className="pt-2 flex items-center gap-4">
-              <a
-                href="#test-details"
-                className="text-xs font-bold text-[#011C40] hover:text-black flex items-center gap-1.5 transition-colors"
-              >
-                <span>View Test Structure &amp; Syllabus</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
+            {/* Key Instructions */}
+            <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2.5 shadow-2xs">
+              <h2 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                Exam Instructions
+              </h2>
+              <ul className="space-y-1.5 text-xs text-gray-600">
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Ensure a stable internet connection before launching the test.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>The assessment opens automatically in fullscreen. Exiting fullscreen or switching tabs logs an integrity violation.</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                  <span>Questions are presented sequentially. Your answers are auto-saved as you proceed.</span>
+                </li>
+              </ul>
             </div>
-
           </div>
 
-          {/* Right Column: Direct Embedded Registration Form */}
-          <div className="lg:col-span-5">
-            <div className="bg-[#F8FAFC] rounded-2xl border border-gray-200 p-6 sm:p-7 shadow-lg relative overflow-hidden">
-              
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-[#FFCC00] via-[#011C40] to-[#EB353A]" />
-
-              <div className="border-b border-gray-200 pb-3 mb-5 flex items-center justify-between">
+          {/* Right: Registration & OTP Verification Card */}
+          <div className="lg:col-span-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-7 shadow-sm">
+              <div className="border-b border-gray-100 pb-4 mb-5 flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-gray-950">
-                    {step === 'DETAILS' ? 'Take Assessment' : 'Verify Mobile OTP'}
+                  <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                    {step === 'DETAILS' ? 'Candidate Registration' : 'Verify Mobile OTP'}
                   </h2>
                   <p className="text-xs text-gray-500 mt-0.5">
                     {step === 'DETAILS'
-                      ? 'Fill your details to enter the proctored test arena.'
-                      : `Code sent to +91 ${formData.phoneNumber}`}
+                      ? 'Enter your details to generate your candidate pass.'
+                      : `Enter the verification code sent to +91 ${formData.phoneNumber}`}
                   </p>
                 </div>
+
                 {IS_DEV && step === 'DETAILS' && (
                   <button
                     type="button"
                     onClick={handleFillDemo}
-                    className="px-2.5 py-1 text-xs font-bold text-[#011C40] bg-amber-100/70 hover:bg-amber-200 border border-amber-300 rounded-md transition-colors cursor-pointer"
+                    className="px-2.5 py-1 text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors cursor-pointer"
                     title="Autofill sample candidate details"
                   >
-                    Demo Details
+                    Demo Fill
                   </button>
                 )}
               </div>
@@ -230,13 +246,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
               {step === 'DETAILS' ? (
                 <form onSubmit={handleSendOtp} className="space-y-3.5">
                   {error && (
-                    <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                    <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
                       {error}
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
                       Full Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -245,13 +261,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                       placeholder="e.g. Rahul Sharma"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#fc0] focus:ring-1 focus:ring-[#fc0]"
+                      className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Email Address <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -260,12 +276,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                         placeholder="student@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#fc0] focus:ring-1 focus:ring-[#fc0]"
+                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Phone Number <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -274,28 +290,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                         placeholder="10-digit number"
                         value={formData.phoneNumber}
                         onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#fc0] focus:ring-1 focus:ring-[#fc0]"
+                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         College / University <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         required
-                        placeholder="e.g. IIT Delhi"
+                        placeholder="e.g. DTU / IIT / NIT"
                         value={formData.college}
                         onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#fc0] focus:ring-1 focus:ring-[#fc0]"
+                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Roll / Student ID Number
                       </label>
                       <input
@@ -303,20 +319,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                         placeholder="e.g. 21CS042"
                         value={formData.rollNumber || ''}
                         onChange={(e) => setFormData({ ...formData, rollNumber: e.target.value })}
-                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#fc0] focus:ring-1 focus:ring-[#fc0]"
+                        className="w-full px-3.5 py-2 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Branch
                       </label>
                       <select
                         value={formData.branch}
                         onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-xs text-gray-900 focus:outline-none focus:border-[#fc0] cursor-pointer"
+                        className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-xs text-gray-900 focus:outline-none focus:border-amber-400 cursor-pointer"
                       >
                         <option value="Computer Science / IT">Computer Science / IT</option>
                         <option value="AI & Data Science">AI & Data Science</option>
@@ -324,17 +340,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                         <option value="Mechanical Engineering">Mechanical Engineering</option>
                         <option value="Electrical Engineering">Electrical Engineering</option>
                         <option value="Civil Engineering">Civil Engineering</option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-700 mb-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Graduation Year
                       </label>
                       <select
                         value={formData.graduationYear}
                         onChange={(e) => setFormData({ ...formData, graduationYear: e.target.value })}
-                        className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-xs text-gray-900 focus:outline-none focus:border-[#fc0] cursor-pointer"
+                        className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-xs text-gray-900 focus:outline-none focus:border-amber-400 cursor-pointer"
                       >
                         <option value="2025">2025 (Final Year)</option>
                         <option value="2026">2026 (3rd Year)</option>
@@ -344,30 +361,30 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                     </div>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-3">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full btn-capabl-yellow py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                      className="w-full btn-capabl-yellow py-2.5 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
                     >
-                      <span>{loading ? 'Sending OTP...' : 'Send OTP & Continue'}</span>
+                      <span>{loading ? 'Sending OTP...' : 'Send OTP & Proceed'}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </form>
               ) : (
                 <form onSubmit={handleVerifyAndRegister} className="space-y-4 pt-1">
-                  <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                     <button
                       type="button"
                       onClick={() => {
                         setStep('DETAILS');
                         setError(null);
                       }}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
                       <ArrowLeft className="w-3.5 h-3.5" />
-                      <span>Edit Info</span>
+                      <span>Edit Details</span>
                     </button>
                     <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" />
@@ -376,16 +393,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                   </div>
 
                   <div className="text-center py-2">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 text-[#011C40] flex items-center justify-center mx-auto mb-2">
-                      <KeyRound className="w-5 h-5 text-[#011C40]" />
+                    <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-center mx-auto mb-2">
+                      <KeyRound className="w-5 h-5 text-amber-700" />
                     </div>
                     <p className="text-xs text-gray-600">
-                      Enter 6-digit OTP sent to <span className="font-bold text-gray-900">+91 {formData.phoneNumber}</span>
+                      Enter the 6-digit OTP sent to <strong className="text-gray-900">+91 {formData.phoneNumber}</strong>
                     </p>
                   </div>
 
                   {error && (
-                    <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium text-center">
+                    <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium text-center">
                       {error}
                     </div>
                   )}
@@ -398,7 +415,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                       placeholder="• • • • • •"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      className="w-full text-center tracking-[0.6em] text-2xl font-mono font-bold py-2.5 rounded-lg bg-white border-2 border-gray-300 focus:border-[#fc0] focus:outline-none transition-colors"
+                      className="w-full text-center tracking-[0.5em] text-2xl font-mono font-bold py-2.5 rounded-lg bg-white border-2 border-gray-300 focus:border-amber-400 focus:outline-none transition-colors"
                       autoFocus
                     />
                   </div>
@@ -408,7 +425,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                       <button
                         type="button"
                         onClick={() => setOtp('123456')}
-                        className="font-bold text-amber-800 hover:text-amber-950 underline underline-offset-2 cursor-pointer"
+                        className="font-medium text-amber-700 hover:text-amber-900 underline underline-offset-2 cursor-pointer"
                       >
                         Use Dev OTP (123456)
                       </button>
@@ -420,20 +437,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
                       type="button"
                       disabled={resendTimer > 0 || loading}
                       onClick={handleResendOtp}
-                      className="font-semibold text-gray-500 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
+                      className="font-medium text-gray-500 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer"
                     >
                       <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
                       {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Resend OTP'}
                     </button>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="pt-3">
                     <button
                       type="submit"
                       disabled={loading || otp.length < 4}
-                      className="w-full btn-capabl-yellow py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+                      className="w-full btn-capabl-yellow py-2.5 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
                     >
-                      <span>{loading ? 'Entering Test Arena...' : 'Verify & Enter Arena'}</span>
+                      <span>{loading ? 'Entering Test Arena...' : 'Verify & Start Test'}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
@@ -443,29 +460,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenRegister }) => {
           </div>
 
         </div>
-
-        {/* Exact Capabl Stats Box Spanning Full Row */}
-        <div className="capabl-stats-box p-6 max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left">
-            <div>
-              <div className="capabl-stat-number">1.5 Lakhs+</div>
-              <div className="capabl-stat-label">Careers<br />Transformed</div>
-            </div>
-            <div>
-              <div className="capabl-stat-number">600+</div>
-              <div className="capabl-stat-label">Industry<br />Experts</div>
-            </div>
-            <div>
-              <div className="capabl-stat-number">12+</div>
-              <div className="capabl-stat-label">Years in<br />Education</div>
-            </div>
-            <div>
-              <div className="capabl-stat-number">800+</div>
-              <div className="capabl-stat-label">Partnered<br />Colleges</div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
   );
