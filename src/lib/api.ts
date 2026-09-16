@@ -4,10 +4,15 @@
  */
 
 const RAW_URL = (process.env.NEXT_PUBLIC_LEARNING_SERVICE_URL || 'http://localhost:3003').replace(/\/+$/, '');
-const API_BASE_URL =
+const BACKEND_URL =
   RAW_URL.includes('sharda.live') && !RAW_URL.endsWith('/learning')
     ? `${RAW_URL}/learning`
     : RAW_URL;
+
+// In browser, use same-origin relative path (handled by Next.js rewrites in next.config.ts)
+// to completely eliminate browser CORS / OPTIONS preflight issues.
+const API_BASE_URL = typeof window !== 'undefined' ? '' : BACKEND_URL;
+
 
 
 export interface RegisterCandidatePayload {
