@@ -242,8 +242,11 @@ export default function QuizPlayerPage({ params }: PageProps) {
             });
             setQuestions(mergedQuestions);
 
-            // Restore drafts if resuming attempt
+            // Restore drafts and resume on the first unattempted question
             const restored: Record<string, UserResponse> = {};
+            let firstUnansweredIdx = 0;
+            let foundUnanswered = false;
+
             backendItems.forEach((bItem: any, idx: number) => {
               const q = mergedQuestions[idx];
               if (bItem.savedAnswer !== undefined && bItem.savedAnswer !== null) {
@@ -256,11 +259,19 @@ export default function QuizPlayerPage({ params }: PageProps) {
                     isMarkedForReview: false,
                     timeSpentSeconds: 15,
                   };
+                } else if (!foundUnanswered) {
+                  firstUnansweredIdx = idx;
+                  foundUnanswered = true;
                 }
+              } else if (!foundUnanswered) {
+                firstUnansweredIdx = idx;
+                foundUnanswered = true;
               }
             });
+
             if (Object.keys(restored).length > 0) {
               setResponses((prev) => ({ ...restored, ...prev }));
+              setCurrentIndex(foundUnanswered ? firstUnansweredIdx : Math.max(0, mergedQuestions.length - 1));
             }
           }
         }
@@ -702,48 +713,40 @@ export default function QuizPlayerPage({ params }: PageProps) {
                 {renderInteractionWidget()}
               </div>
 
-              {/* Action Toolbar */}
+              {/* Action Toolbar - Linear Progression Only */}
               <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-gray-100">
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={handleToggleMarkForReview}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                      currentResponse.isMarkedForReview
-                        ? 'bg-purple-700 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Bookmark className="w-3.5 h-3.5" />
-                    <span>{currentResponse.isMarkedForReview ? 'Marked' : 'Mark for Review'}</span>
-                  </button>
-
-                  <button
                     onClick={handleClearResponse}
-                    className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-xs"
+                    className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-xs flex items-center gap-1.5 font-medium"
                     title="Clear response"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Clear Answer</span>
                   </button>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <button
-                    onClick={handlePrev}
-                    disabled={currentIndex === 0}
-                    className="px-4 py-2 rounded-lg bg-gray-100 text-xs font-bold text-gray-700 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Previous</span>
-                  </button>
-
-                  <button
-                    onClick={handleNext}
-                    disabled={currentIndex === questions.length - 1}
-                    className="btn-capabl px-5 py-2 rounded-lg text-xs font-bold text-black flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
-                  >
-                    <span>Save & Next</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                  {currentIndex === questions.length - 1 ? (
+                    <button
+                      onClick={() => {
+                        setSubmitError(null);
+                        setIsSubmitModalOpen(true);
+                      }}
+                      className="btn-capabl-yellow px-6 py-2.5 rounded-lg text-xs font-bold text-black flex items-center gap-1.5 cursor-pointer shadow-xs hover:shadow-md transition-all"
+                    >
+                      <span>Save & Submit Test</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleNext}
+                      className="btn-capabl px-6 py-2.5 rounded-lg text-xs font-bold text-black flex items-center gap-1 cursor-pointer shadow-xs"
+                    >
+                      <span>Next Question</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
 
               </div>

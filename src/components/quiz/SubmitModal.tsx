@@ -73,12 +73,6 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             </div>
           </div>
 
-          {markedCount > 0 && (
-            <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 text-xs">
-              You have <strong>{markedCount} question(s)</strong> marked for review.
-            </div>
-          )}
-
           {submitError && (
             <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />

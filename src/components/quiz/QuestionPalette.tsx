@@ -15,13 +15,10 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
   responses,
 }) => {
   let answeredCount = 0;
-  let markedCount = 0;
 
   questions.forEach((q) => {
     const res = responses[q.id];
-    if (res?.isMarkedForReview) {
-      markedCount++;
-    } else if (res?.answer !== undefined && res?.answer !== null && res?.answer !== '' && (!Array.isArray(res?.answer) || res?.answer.length > 0)) {
+    if (res?.answer !== undefined && res?.answer !== null && res?.answer !== '' && (!Array.isArray(res?.answer) || res?.answer.length > 0)) {
       answeredCount++;
     }
   });
@@ -33,7 +30,7 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <h4 className="font-extrabold text-sm text-gray-950">
-              Question Progress
+              Assessment Progress
             </h4>
           </div>
           <span className="text-xs text-gray-500 font-bold font-mono">
@@ -46,42 +43,37 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
             <span>Answered</span>
             <span className="font-bold">{answeredCount}</span>
           </div>
-          <div className="p-2 rounded-lg bg-purple-50 border border-purple-200 text-purple-800 flex items-center justify-between font-semibold">
-            <span>Marked</span>
-            <span className="font-bold">{markedCount}</span>
+          <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-700 flex items-center justify-between font-semibold">
+            <span>Remaining</span>
+            <span className="font-bold">{questions.length - answeredCount}</span>
           </div>
         </div>
       </div>
 
-      {/* Grid of numbers - read-only indicators (jumping disabled) */}
+      {/* Grid of numbers - read-only linear progression indicators */}
       <div className="p-1">
         <div className="grid grid-cols-6 gap-2">
           {questions.map((q, idx) => {
             const isCurrent = currentIndex === idx;
             const res = responses[q.id];
             const isAnswered = res?.answer !== undefined && res?.answer !== null && res?.answer !== '' && (!Array.isArray(res?.answer) || res?.answer.length > 0);
-            const isMarked = res?.isMarkedForReview;
+            const isPast = idx < currentIndex;
 
-            let badgeStyle = 'bg-gray-50 text-gray-700 border-gray-200';
-            if (isMarked) {
-              badgeStyle = 'bg-purple-100 text-purple-950 border-purple-400 font-bold';
+            let badgeStyle = 'bg-gray-50 text-gray-400 border-gray-200 opacity-60';
+            if (isCurrent) {
+              badgeStyle = 'ring-2 ring-[#011C40] ring-offset-1 font-black bg-gray-900 text-white border-gray-900 z-10 opacity-100';
             } else if (isAnswered) {
-              badgeStyle = 'bg-emerald-100 text-emerald-950 border-emerald-400 font-bold';
+              badgeStyle = 'bg-emerald-100 text-emerald-950 border-emerald-400 font-bold opacity-100';
+            } else if (isPast) {
+              badgeStyle = 'bg-gray-100 text-gray-600 border-gray-300 opacity-90';
             }
 
             return (
               <div
                 key={q.id}
-                className={`h-9 w-full rounded-lg text-xs font-bold flex items-center justify-center border transition-all select-none relative ${badgeStyle} ${
-                  isCurrent
-                    ? 'ring-2 ring-[#011C40] ring-offset-1 font-black bg-gray-900 text-white border-gray-900 z-10'
-                    : ''
-                }`}
+                className={`h-9 w-full rounded-lg text-xs font-bold flex items-center justify-center border transition-all select-none relative ${badgeStyle}`}
               >
                 <span>{idx + 1}</span>
-                {isMarked && (
-                  <span className="w-2 h-2 rounded-full bg-purple-600 absolute top-1 right-1 border border-white" />
-                )}
               </div>
             );
           })}
@@ -92,15 +84,15 @@ export const QuestionPalette: React.FC<QuestionPaletteProps> = ({
       <div className="pt-3 border-t border-gray-100 space-y-1.5 text-xs text-gray-600">
         <div className="flex items-center gap-2">
           <div className="w-3.5 h-3.5 rounded bg-emerald-100 border border-emerald-400 shrink-0" />
-          <span>Answered</span>
+          <span>Answered & Completed</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded bg-purple-100 border border-purple-400 shrink-0" />
-          <span>Marked for Review</span>
+          <div className="w-3.5 h-3.5 rounded bg-gray-900 border border-gray-900 shrink-0" />
+          <span>Current Question</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 rounded bg-gray-50 border border-gray-300 shrink-0" />
-          <span>Not Answered</span>
+          <div className="w-3.5 h-3.5 rounded bg-gray-50 border border-gray-300 shrink-0 opacity-60" />
+          <span>Upcoming</span>
         </div>
       </div>
     </div>
