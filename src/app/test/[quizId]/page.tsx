@@ -559,27 +559,57 @@ export default function QuizPlayerPage({ params }: PageProps) {
   }
 
   if (loadError) {
+    const isMaxAttempts = loadError.toLowerCase().includes('maximum attempts reached') || loadError.toLowerCase().includes('max attempts');
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] px-4">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-200 max-w-md w-full text-center space-y-4">
-          <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">
-            !
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto text-xl font-bold ${
+            isMaxAttempts ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-600'
+          }`}>
+            {isMaxAttempts ? '✓' : '!'}
           </div>
-          <h2 className="text-lg font-bold text-gray-900">Unable to Start Assessment</h2>
-          <p className="text-sm text-gray-600">{loadError}</p>
+          <h2 className="text-lg font-bold text-gray-900">
+            {isMaxAttempts ? 'Assessment Completed' : 'Unable to Start Assessment'}
+          </h2>
+          <p className="text-sm text-gray-600">
+            {isMaxAttempts
+              ? 'You have already completed the maximum allowed attempts for this assessment. If this was a test run, you can register with a different number or request an attempt reset from the administrator.'
+              : loadError}
+          </p>
           <div className="flex gap-3 pt-2">
             <button
-              onClick={() => router.push('/')}
-              className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition-colors"
+              onClick={() => {
+                sessionStorage.removeItem('aisat_token');
+                sessionStorage.removeItem('aisat_candidate');
+                sessionStorage.removeItem('aisat_responses');
+                router.push('/');
+              }}
+              className="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition-colors cursor-pointer"
             >
               Go to Home
             </button>
-            <button
-              onClick={() => window.location.reload()}
-              className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors"
-            >
-              Retry
-            </button>
+            {isMaxAttempts ? (
+              <button
+                onClick={() => {
+                  sessionStorage.removeItem('aisat_token');
+                  sessionStorage.removeItem('aisat_candidate');
+                  sessionStorage.removeItem('aisat_responses');
+                  setIsAuthModalOpen(true);
+                  setLoadError(null);
+                }}
+                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+              >
+                New Candidate
+              </button>
+            ) : (
+              <button
+                onClick={() => window.location.reload()}
+                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+              >
+                Retry
+              </button>
+            )}
           </div>
         </div>
       </div>
