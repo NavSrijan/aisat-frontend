@@ -3,7 +3,12 @@
  * Connects directly to learning-service for candidate registration, attempt lifecycle, autosave, and submission.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_LEARNING_SERVICE_URL || 'http://localhost:3003';
+const RAW_URL = (process.env.NEXT_PUBLIC_LEARNING_SERVICE_URL || 'http://localhost:3003').replace(/\/+$/, '');
+const API_BASE_URL =
+  RAW_URL.includes('sharda.live') && !RAW_URL.endsWith('/learning')
+    ? `${RAW_URL}/learning`
+    : RAW_URL;
+
 
 export interface RegisterCandidatePayload {
   name: string;
