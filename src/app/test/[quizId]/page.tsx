@@ -281,7 +281,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
       } catch (err: any) {
         console.error('Backend startAttempt error:', err);
         if (isMounted) {
-          const errMsg = err?.message || '';
+          const errMsg = err?.message || err?.response?.data?.message || err?.response?.data?.error || 'Failed to start assessment';
           if (
             errMsg.includes('401') ||
             errMsg.toLowerCase().includes('unauthorized') ||
@@ -290,10 +290,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
             sessionStorage.removeItem('aisat_token');
             setIsAuthModalOpen(true);
           } else {
-            setQuestions(quiz.questions);
-            setQuizTitle(quiz.title);
-            setAttemptId(`offline_${Date.now()}`);
-            setLoadError(null);
+            setLoadError(errMsg);
           }
         }
       } finally {
