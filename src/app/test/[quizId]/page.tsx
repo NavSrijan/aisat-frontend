@@ -123,6 +123,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [authVersion, setAuthVersion] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, UserResponse>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -299,7 +300,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
     return () => {
       isMounted = false;
     };
-  }, [resolvedParams.quizId]);
+  }, [resolvedParams.quizId, authVersion]);
 
   const currentQuestion: QuizQuestion | undefined = questions[currentIndex] || questions[0];
   const activeSectionId = currentQuestion?.sectionId || 'sec-a';
@@ -551,7 +552,8 @@ export default function QuizPlayerPage({ params }: PageProps) {
           onSuccess={(newToken, newCandidate) => {
             setCandidate(newCandidate);
             setIsAuthModalOpen(false);
-            window.location.reload();
+            setLoadError(null);
+            setAuthVersion((v) => v + 1);
           }}
         />
       </div>

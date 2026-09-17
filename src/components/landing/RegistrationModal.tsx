@@ -360,10 +360,10 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
 
       if (onSuccess) {
         onSuccess(response.data.token, response.data.candidate);
-        onClose();
       } else {
         const targetQuizId = response.data.quizId || quizId || '03afd2a8-2294-4e37-b81b-722300f66d81';
         router.push(`/test/${targetQuizId}`);
+        onClose();
       }
     } catch (err: any) {
       console.error('Registration/OTP failed:', err);
