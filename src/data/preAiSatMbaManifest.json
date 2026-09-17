@@ -1,0 +1,1678 @@
+{
+  "id": "pre-ai-sat-mba",
+  "title": "Pre AI SAT MBA",
+  "subtitle": "Non-Tech AI SAT (Management) Benchmark Assessment",
+  "code": "AISAT-MBA-PRE-2026",
+  "totalDurationMinutes": 45,
+  "totalMarks": 123,
+  "instructions": [
+    "This assessment measures practical AI literacy, prompt engineering, evaluation judgment, and management workflow readiness.",
+    "There are 10 self-perception rating items followed by 40 scenario and concept multiple-choice questions.",
+    "Answer based on practical business judgment. There is no negative marking.",
+    "Your responses are saved continuously in real time."
+  ],
+  "sections": [
+    {
+      "id": "sec-perception",
+      "title": "Self-Assessment \u00b7 AI Perception & Confidence",
+      "description": "Rate your confidence across key AI workflows before beginning the knowledge assessment.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "perc_PC-01",
+        "perc_PC-02",
+        "perc_PC-03",
+        "perc_PC-04",
+        "perc_PC-05",
+        "perc_PC-06",
+        "perc_PC-07",
+        "perc_PC-08",
+        "perc_PC-09",
+        "perc_PC-10"
+      ]
+    },
+    {
+      "id": "sec-literacy",
+      "title": "Section A \u00b7 AI Literacy & Concepts",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Literacy.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_1",
+        "asmt_q_2",
+        "asmt_q_3",
+        "asmt_q_4",
+        "asmt_q_5"
+      ]
+    },
+    {
+      "id": "sec-prompting",
+      "title": "Section B \u00b7 Prompt Engineering",
+      "description": "Multiple-choice questions testing practical application and judgment in Prompt Engineering.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_16",
+        "asmt_q_17",
+        "asmt_q_18",
+        "asmt_q_19",
+        "asmt_q_20"
+      ]
+    },
+    {
+      "id": "sec-research",
+      "title": "Section C \u00b7 AI Research & Info Retrieval",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Research & Info Retrieval.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_31",
+        "asmt_q_32",
+        "asmt_q_33",
+        "asmt_q_34",
+        "asmt_q_35"
+      ]
+    },
+    {
+      "id": "sec-responsible",
+      "title": "Section D \u00b7 Responsible AI & Governance",
+      "description": "Multiple-choice questions testing practical application and judgment in Responsible AI.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_46",
+        "asmt_q_47",
+        "asmt_q_48",
+        "asmt_q_49",
+        "asmt_q_50"
+      ]
+    },
+    {
+      "id": "sec-eval",
+      "title": "Section E \u00b7 Evaluation & Critical Judgment",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Evaluation & Critical Judgement.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_61",
+        "asmt_q_62",
+        "asmt_q_63",
+        "asmt_q_64",
+        "asmt_q_65"
+      ]
+    },
+    {
+      "id": "sec-content",
+      "title": "Section F \u00b7 Content Creation & Communication",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Content Creation.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_76",
+        "asmt_q_77",
+        "asmt_q_78",
+        "asmt_q_79",
+        "asmt_q_80"
+      ]
+    },
+    {
+      "id": "sec-productivity",
+      "title": "Section G \u00b7 Productivity & Knowledge Management",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Productivity & Knowledge Mgmt.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_91",
+        "asmt_q_92",
+        "asmt_q_93",
+        "asmt_q_94",
+        "asmt_q_95"
+      ]
+    },
+    {
+      "id": "sec-workflow",
+      "title": "Section H \u00b7 Workflow Automation",
+      "description": "Multiple-choice questions testing practical application and judgment in AI Workflow Automation.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_106",
+        "asmt_q_107",
+        "asmt_q_108"
+      ]
+    },
+    {
+      "id": "sec-agentic",
+      "title": "Section I \u00b7 Agentic Systems",
+      "description": "Multiple-choice questions testing practical application and judgment in Agentic AI.",
+      "durationMinutes": 5,
+      "questionIds": [
+        "asmt_q_116",
+        "asmt_q_117"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "perc_PC-01",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-01",
+      "prompt": "I can explain in plain terms why an AI tool sometimes gives a confidently wrong answer.",
+      "marks": 1,
+      "comp": "AI Literacy",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Literacy",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-02",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-02",
+      "prompt": "I understand why an AI assistant can lose track of something said earlier in a long conversation.",
+      "marks": 1,
+      "comp": "AI Literacy",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Literacy",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-03",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-03",
+      "prompt": "I can tell a colleague what limits how much text an AI tool can \u2018see\u2019 at once.",
+      "marks": 1,
+      "comp": "AI Literacy",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Literacy",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-04",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-04",
+      "prompt": "I can get noticeably better output from an AI tool just by rewriting how I ask for it.",
+      "marks": 1,
+      "comp": "Prompt Engineering",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 Prompt Engineering",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-05",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-05",
+      "prompt": "I can give an AI tool examples of what I want so it copies the pattern correctly.",
+      "marks": 1,
+      "comp": "Prompt Engineering",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 Prompt Engineering",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-06",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-06",
+      "prompt": "When an AI's first answer misses the mark, I know how to guide it toward what I actually need across a few follow-up messages.",
+      "marks": 1,
+      "comp": "Prompt Engineering",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 Prompt Engineering",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-07",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-07",
+      "prompt": "Before I act on something an AI tool tells me, I check whether it's actually true.",
+      "marks": 1,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Research & Info Retrieval",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-08",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-08",
+      "prompt": "I can get an AI tool to pull together information from multiple sources into one clear summary.",
+      "marks": 1,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Research & Info Retrieval",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-09",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-09",
+      "prompt": "I can tell when an AI-generated answer is guessing versus when it's grounded in something real.",
+      "marks": 1,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 AI Research & Info Retrieval",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "perc_PC-10",
+      "sectionId": "sec-perception",
+      "type": "MCQ_SINGLE",
+      "title": "Perception Check \u00b7 PC-10",
+      "prompt": "I would catch it if an AI assistant made up a policy or price that isn't real.",
+      "marks": 1,
+      "comp": "Responsible AI",
+      "tier": "Self-Assessment",
+      "explanationHint": "Self-Perception \u00b7 Responsible AI",
+      "options": [
+        {
+          "id": "opt_1",
+          "text": "1 - Strongly Disagree"
+        },
+        {
+          "id": "opt_2",
+          "text": "2 - Disagree"
+        },
+        {
+          "id": "opt_3",
+          "text": "3 - Neutral"
+        },
+        {
+          "id": "opt_4",
+          "text": "4 - Agree"
+        },
+        {
+          "id": "opt_5",
+          "text": "5 - Strongly Agree"
+        }
+      ]
+    },
+    {
+      "id": "asmt_q_1",
+      "sectionId": "sec-literacy",
+      "type": "MCQ_SINGLE",
+      "title": "AI Literacy \u00b7 Q1",
+      "prompt": "A colleague pastes a 40-page document into an AI chat and the tool suddenly \u2018forgets\u2019 the details from the first ten pages. What is the most likely cause?",
+      "marks": 3,
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Context-window overflow, not deliberate concealment.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "The AI only reads the last page"
+        },
+        {
+          "id": "opt_b",
+          "text": "The document exceeded the tool's context window"
+        },
+        {
+          "id": "opt_c",
+          "text": "The file format wasn't supported"
+        },
+        {
+          "id": "opt_d",
+          "text": "The AI is deliberately hiding information"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_2",
+      "sectionId": "sec-literacy",
+      "type": "MCQ_SINGLE",
+      "title": "AI Literacy \u00b7 Q2",
+      "prompt": "An AI assistant confidently states a statistic that turns out to be completely fabricated. What is this called?",
+      "marks": 3,
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Core definition item.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A prompt injection"
+        },
+        {
+          "id": "opt_b",
+          "text": "A token limit"
+        },
+        {
+          "id": "opt_c",
+          "text": "A context window error"
+        },
+        {
+          "id": "opt_d",
+          "text": "A hallucination"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_3",
+      "sectionId": "sec-literacy",
+      "type": "MCQ_SINGLE",
+      "title": "AI Literacy \u00b7 Q3",
+      "prompt": "What is a \u2018token\u2019 in the context of how an AI language model processes text?",
+      "marks": 3,
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Tests basic vocabulary literacy.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A unit of text (roughly a word piece) the model processes"
+        },
+        {
+          "id": "opt_b",
+          "text": "A type of chatbot plugin"
+        },
+        {
+          "id": "opt_c",
+          "text": "A billing currency only"
+        },
+        {
+          "id": "opt_d",
+          "text": "A security credential"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_4",
+      "sectionId": "sec-literacy",
+      "type": "MCQ_SINGLE",
+      "title": "AI Literacy \u00b7 Q4",
+      "prompt": "Why might an AI tool give a different answer to the same question asked twice?",
+      "marks": 3,
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Tests understanding of generative variability.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Language models generate responses with some built-in variability"
+        },
+        {
+          "id": "opt_b",
+          "text": "It only works once per session"
+        },
+        {
+          "id": "opt_c",
+          "text": "It's broken"
+        },
+        {
+          "id": "opt_d",
+          "text": "It requires a paid upgrade"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_5",
+      "sectionId": "sec-literacy",
+      "type": "MCQ_SINGLE",
+      "title": "AI Literacy \u00b7 Q5",
+      "prompt": "A team member says \u2018the AI just knows everything.\u2019 What is the most accurate correction?",
+      "marks": 3,
+      "comp": "AI Literacy",
+      "tier": "Proficient",
+      "explanationHint": "Corrects a common literacy misconception.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It generates plausible responses based on patterns in training data, which can be wrong or outdated"
+        },
+        {
+          "id": "opt_b",
+          "text": "It only knows what's on the internet today"
+        },
+        {
+          "id": "opt_c",
+          "text": "It has to be connected to a database to know anything"
+        },
+        {
+          "id": "opt_d",
+          "text": "It has real-time access to all information"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_16",
+      "sectionId": "sec-prompting",
+      "type": "MCQ_SINGLE",
+      "title": "Prompt Engineering \u00b7 Q1",
+      "prompt": "A team wants an AI tool to categorize incoming support tickets into \u2018Billing,\u2019 \u2018Technical,\u2019 or \u2018General\u2019 exactly the way they've been doing it manually. What's the best prompting approach?",
+      "marks": 3,
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "Few-shot fits pattern-matching against existing examples.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Multi-turn: split the task across many separate messages"
+        },
+        {
+          "id": "opt_b",
+          "text": "Zero-shot: just ask it to categorize"
+        },
+        {
+          "id": "opt_c",
+          "text": "Negative prompting: only tell it what not to do"
+        },
+        {
+          "id": "opt_d",
+          "text": "Few-shot: give 3-4 labeled examples of tickets and their correct category, then ask it to continue the pattern"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_17",
+      "sectionId": "sec-prompting",
+      "type": "MCQ_SINGLE",
+      "title": "Prompt Engineering \u00b7 Q2",
+      "prompt": "A finance team needs an AI tool to work through a multi-step reimbursement calculation without skipping steps. Which technique best fits?",
+      "marks": 3,
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "CoT reduces skipped steps in multi-step reasoning.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Chain-of-thought: ask the model to reason step-by-step before giving the final number"
+        },
+        {
+          "id": "opt_b",
+          "text": "Zero-shot with no instructions"
+        },
+        {
+          "id": "opt_c",
+          "text": "Negative prompting"
+        },
+        {
+          "id": "opt_d",
+          "text": "Role prompting alone"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_18",
+      "sectionId": "sec-prompting",
+      "type": "MCQ_SINGLE",
+      "title": "Prompt Engineering \u00b7 Q3",
+      "prompt": "A marketing manager wants AI-generated copy to sound like it's written by a 10-year veteran brand strategist, not a generic assistant. Best technique?",
+      "marks": 3,
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "Persona/role assignment shapes voice.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Role/context prompting: assign the AI a persona and background before the task"
+        },
+        {
+          "id": "opt_b",
+          "text": "Zero-shot"
+        },
+        {
+          "id": "opt_c",
+          "text": "Negative prompting"
+        },
+        {
+          "id": "opt_d",
+          "text": "Few-shot with unrelated examples"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_19",
+      "sectionId": "sec-prompting",
+      "type": "MCQ_SINGLE",
+      "title": "Prompt Engineering \u00b7 Q4",
+      "prompt": "A restaurant wants AI-drafted reservation confirmations that never mention pricing or discounts. What should the prompt include?",
+      "marks": 3,
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "Negative prompting sets explicit exclusions.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A request for a longer response"
+        },
+        {
+          "id": "opt_b",
+          "text": "A single example with no instructions"
+        },
+        {
+          "id": "opt_c",
+          "text": "An explicit instruction stating what the AI must not mention (e.g., pricing, discounts)"
+        },
+        {
+          "id": "opt_d",
+          "text": "A long list of what to include"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_20",
+      "sectionId": "sec-prompting",
+      "type": "MCQ_SINGLE",
+      "title": "Prompt Engineering \u00b7 Q5",
+      "prompt": "A recruiter is refining a job description with an AI tool: first draft, then narrowing the tone, then trimming length. This is an example of:",
+      "marks": 3,
+      "comp": "Prompt Engineering",
+      "tier": "Proficient",
+      "explanationHint": "Iterative refinement across messages defines multi-turn.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Zero-shot prompting"
+        },
+        {
+          "id": "opt_b",
+          "text": "Multi-turn prompting: iterating across several connected messages toward a refined result"
+        },
+        {
+          "id": "opt_c",
+          "text": "Few-shot prompting"
+        },
+        {
+          "id": "opt_d",
+          "text": "Role prompting"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_31",
+      "sectionId": "sec-research",
+      "type": "MCQ_SINGLE",
+      "title": "AI Research & Info Retrieval \u00b7 Q1",
+      "prompt": "An AI tool summarizes three articles into one brief but the summary includes a claim not found in any of them. What should the user do?",
+      "marks": 3,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Advanced",
+      "explanationHint": "Core verification practice.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Assume the AI found a fourth uncited source"
+        },
+        {
+          "id": "opt_b",
+          "text": "Trust it since AI tools are usually accurate"
+        },
+        {
+          "id": "opt_c",
+          "text": "Ignore it since summaries are always safe"
+        },
+        {
+          "id": "opt_d",
+          "text": "Verify the claim against the original sources before using it"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_32",
+      "sectionId": "sec-research",
+      "type": "MCQ_SINGLE",
+      "title": "AI Research & Info Retrieval \u00b7 Q2",
+      "prompt": "What is the best first step when an AI-generated answer is needed for a decision with real financial consequences?",
+      "marks": 3,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Advanced",
+      "explanationHint": "Stakes-based verification.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Use the first answer given"
+        },
+        {
+          "id": "opt_b",
+          "text": "Assume it's correct if it sounds confident"
+        },
+        {
+          "id": "opt_c",
+          "text": "Ask the AI to repeat the answer twice"
+        },
+        {
+          "id": "opt_d",
+          "text": "Cross-check the answer against at least one independent, trusted source"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_33",
+      "sectionId": "sec-research",
+      "type": "MCQ_SINGLE",
+      "title": "AI Research & Info Retrieval \u00b7 Q3",
+      "prompt": "A vague search query like \u2018best tool\u2019 returns unhelpful AI results. What's the best fix?",
+      "marks": 3,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Advanced",
+      "explanationHint": "Query refinement skill.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Repeat the exact same query"
+        },
+        {
+          "id": "opt_b",
+          "text": "Narrow the query with specific criteria (use case, budget, constraints)"
+        },
+        {
+          "id": "opt_c",
+          "text": "Give up and search manually only"
+        },
+        {
+          "id": "opt_d",
+          "text": "Ask a completely unrelated question"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_34",
+      "sectionId": "sec-research",
+      "type": "MCQ_SINGLE",
+      "title": "AI Research & Info Retrieval \u00b7 Q4",
+      "prompt": "Which is a red flag that an AI-retrieved \u2018fact\u2019 may be unreliable?",
+      "marks": 3,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Advanced",
+      "explanationHint": "Distinguishes surface plausibility from verifiability.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It cannot be traced to any verifiable source when checked"
+        },
+        {
+          "id": "opt_b",
+          "text": "It's phrased in complete sentences"
+        },
+        {
+          "id": "opt_c",
+          "text": "It matches multiple independent sources"
+        },
+        {
+          "id": "opt_d",
+          "text": "It includes a date"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_35",
+      "sectionId": "sec-research",
+      "type": "MCQ_SINGLE",
+      "title": "AI Research & Info Retrieval \u00b7 Q5",
+      "prompt": "When asking an AI tool to compare pricing across competitors, what's the safest practice?",
+      "marks": 3,
+      "comp": "AI Research & Info Retrieval",
+      "tier": "Advanced",
+      "explanationHint": "Applied verification scenario.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Treat the figures as a starting point and verify current pricing directly with each source"
+        },
+        {
+          "id": "opt_b",
+          "text": "Assume prices never change"
+        },
+        {
+          "id": "opt_c",
+          "text": "Publish the numbers immediately"
+        },
+        {
+          "id": "opt_d",
+          "text": "Only check the cheapest option"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_46",
+      "sectionId": "sec-responsible",
+      "type": "MCQ_SINGLE",
+      "title": "Responsible AI \u00b7 Q1",
+      "prompt": "A customer chatbot's system prompt has no instruction about what to do when asked something outside its scope. What's the most likely failure?",
+      "marks": 3,
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Missing scope boundary.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It will shut down"
+        },
+        {
+          "id": "opt_b",
+          "text": "It will always escalate automatically"
+        },
+        {
+          "id": "opt_c",
+          "text": "It will ask for payment"
+        },
+        {
+          "id": "opt_d",
+          "text": "It may confidently answer questions it shouldn't, including inventing information"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_47",
+      "sectionId": "sec-responsible",
+      "type": "MCQ_SINGLE",
+      "title": "Responsible AI \u00b7 Q2",
+      "prompt": "A support bot is asked about a refund policy that doesn't exist in its training. Without proper guardrails, what's the biggest risk?",
+      "marks": 3,
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Core no-invented-policy risk.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It logs off"
+        },
+        {
+          "id": "opt_b",
+          "text": "It may invent a plausible-sounding but false policy"
+        },
+        {
+          "id": "opt_c",
+          "text": "It automatically contacts a human"
+        },
+        {
+          "id": "opt_d",
+          "text": "It refuses to answer anything"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_48",
+      "sectionId": "sec-responsible",
+      "type": "MCQ_SINGLE",
+      "title": "Responsible AI \u00b7 Q3",
+      "prompt": "What should a well-designed system prompt include for a customer-facing AI agent handling pricing questions?",
+      "marks": 3,
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Correct guardrail design.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "An explicit instruction to only state verified pricing and escalate anything uncertain"
+        },
+        {
+          "id": "opt_b",
+          "text": "No pricing-related instructions at all"
+        },
+        {
+          "id": "opt_c",
+          "text": "Freedom to estimate prices when unsure"
+        },
+        {
+          "id": "opt_d",
+          "text": "A joke to lighten the mood"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_49",
+      "sectionId": "sec-responsible",
+      "type": "MCQ_SINGLE",
+      "title": "Responsible AI \u00b7 Q4",
+      "prompt": "A chatbot handling account changes has no escalation rule for sensitive requests (e.g., closing an account). What should be added?",
+      "marks": 3,
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Escalation rule design.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A rule to always approve the request"
+        },
+        {
+          "id": "opt_b",
+          "text": "Nothing, the bot should handle everything itself"
+        },
+        {
+          "id": "opt_c",
+          "text": "A rule requiring escalation to a human for sensitive or high-stakes actions"
+        },
+        {
+          "id": "opt_d",
+          "text": "A rule to always deny the request"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_50",
+      "sectionId": "sec-responsible",
+      "type": "MCQ_SINGLE",
+      "title": "Responsible AI \u00b7 Q5",
+      "prompt": "Why is \u2018scope\u2019 an important element of a responsible AI system prompt?",
+      "marks": 3,
+      "comp": "Responsible AI",
+      "tier": "Proficient",
+      "explanationHint": "Purpose of scope definition.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It defines what the AI is and isn't allowed to address, preventing it from overstepping into risky territory"
+        },
+        {
+          "id": "opt_b",
+          "text": "It's only relevant for legal teams"
+        },
+        {
+          "id": "opt_c",
+          "text": "It has no practical effect"
+        },
+        {
+          "id": "opt_d",
+          "text": "It makes responses longer"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_61",
+      "sectionId": "sec-eval",
+      "type": "MCQ_SINGLE",
+      "title": "AI Evaluation & Critical Judgement \u00b7 Q1",
+      "prompt": "Two AI-generated marketing emails are shown. Email A is polished but factually vague; Email B is less polished but factually precise and actionable. For a campaign requiring accuracy, which should be preferred?",
+      "marks": 3,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Advanced",
+      "explanationHint": "Prioritizing task-relevant criteria over polish.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Email B, because factual precision matters more for the stated goal"
+        },
+        {
+          "id": "opt_b",
+          "text": "Neither matters"
+        },
+        {
+          "id": "opt_c",
+          "text": "Whichever is longer"
+        },
+        {
+          "id": "opt_d",
+          "text": "Email A, because polish matters most"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_62",
+      "sectionId": "sec-eval",
+      "type": "MCQ_SINGLE",
+      "title": "AI Evaluation & Critical Judgement \u00b7 Q2",
+      "prompt": "What's the first question to ask when evaluating any AI-generated output before using it?",
+      "marks": 3,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Advanced",
+      "explanationHint": "Foundational evaluation question.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Did it take a long time to generate?"
+        },
+        {
+          "id": "opt_b",
+          "text": "Is it long enough?"
+        },
+        {
+          "id": "opt_c",
+          "text": "Does it sound confident?"
+        },
+        {
+          "id": "opt_d",
+          "text": "Does it actually meet the task's real requirements and constraints?"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_63",
+      "sectionId": "sec-eval",
+      "type": "MCQ_SINGLE",
+      "title": "AI Evaluation & Critical Judgement \u00b7 Q3",
+      "prompt": "An AI-written report reads smoothly but contains a factual contradiction between two sections. What should a careful reviewer do?",
+      "marks": 3,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Advanced",
+      "explanationHint": "Fluency vs. accuracy distinction.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Flag and resolve the contradiction before using the report"
+        },
+        {
+          "id": "opt_b",
+          "text": "Shorten the report to hide the issue"
+        },
+        {
+          "id": "opt_c",
+          "text": "Ignore it since it reads well"
+        },
+        {
+          "id": "opt_d",
+          "text": "Assume the AI double-checked itself"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_64",
+      "sectionId": "sec-eval",
+      "type": "MCQ_SINGLE",
+      "title": "AI Evaluation & Critical Judgement \u00b7 Q4",
+      "prompt": "When comparing two AI outputs for the same task, which is the most reliable evaluation method?",
+      "marks": 3,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Advanced",
+      "explanationHint": "Criteria-based comparison over intuition.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Picking whichever \u2018feels\u2019 better instantly"
+        },
+        {
+          "id": "opt_b",
+          "text": "Checking each against explicit, pre-defined criteria relevant to the task"
+        },
+        {
+          "id": "opt_c",
+          "text": "Picking the one generated first"
+        },
+        {
+          "id": "opt_d",
+          "text": "Picking the longer one"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_65",
+      "sectionId": "sec-eval",
+      "type": "MCQ_SINGLE",
+      "title": "AI Evaluation & Critical Judgement \u00b7 Q5",
+      "prompt": "An AI-generated code snippet runs without errors. Does that guarantee it's correct?",
+      "marks": 3,
+      "comp": "AI Evaluation & Critical Judgement",
+      "tier": "Advanced",
+      "explanationHint": "Running \u2260 correct.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Only if it's short"
+        },
+        {
+          "id": "opt_b",
+          "text": "Yes, no errors means it's fully correct"
+        },
+        {
+          "id": "opt_c",
+          "text": "Yes, always"
+        },
+        {
+          "id": "opt_d",
+          "text": "No, it should still be checked against the actual requirement, since it can run without producing the right result"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_76",
+      "sectionId": "sec-content",
+      "type": "MCQ_SINGLE",
+      "title": "AI Content Creation \u00b7 Q1",
+      "prompt": "An AI content flow is supposed to output a caption and a separate list of hashtags as two distinct fields, but instead returns one blended paragraph with hashtags mixed into the caption text. What's the defect?",
+      "marks": 3,
+      "comp": "AI Content Creation",
+      "tier": "Proficient",
+      "explanationHint": "Core structured-output defect.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "The caption is too short"
+        },
+        {
+          "id": "opt_b",
+          "text": "The hashtags are missing entirely"
+        },
+        {
+          "id": "opt_c",
+          "text": "The structured-output separation between caption and hashtags has broken down"
+        },
+        {
+          "id": "opt_d",
+          "text": "The output is fine as-is"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_77",
+      "sectionId": "sec-content",
+      "type": "MCQ_SINGLE",
+      "title": "AI Content Creation \u00b7 Q2",
+      "prompt": "A content generation flow is meant to output JSON with fields \u2018caption\u2019 and \u2018hashtags\u2019 but instead returns plain unstructured text. What will most likely happen downstream?",
+      "marks": 3,
+      "comp": "AI Content Creation",
+      "tier": "Proficient",
+      "explanationHint": "Downstream consequence of broken structure.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Systems expecting structured fields will fail to parse or post correctly"
+        },
+        {
+          "id": "opt_b",
+          "text": "It has no effect on automation"
+        },
+        {
+          "id": "opt_c",
+          "text": "It will automatically reformat itself"
+        },
+        {
+          "id": "opt_d",
+          "text": "Nothing, downstream systems handle any format"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_78",
+      "sectionId": "sec-content",
+      "type": "MCQ_SINGLE",
+      "title": "AI Content Creation \u00b7 Q3",
+      "prompt": "A caption-generation prompt is expected to produce content matching brand voice, but output reads generic and could belong to any brand. What's the most direct fix?",
+      "marks": 3,
+      "comp": "AI Content Creation",
+      "tier": "Proficient",
+      "explanationHint": "Brand-voice fix via context.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Add explicit brand-voice examples or descriptors (tone, phrases, audience) to the prompt"
+        },
+        {
+          "id": "opt_b",
+          "text": "Remove all instructions"
+        },
+        {
+          "id": "opt_c",
+          "text": "Shorten the caption only"
+        },
+        {
+          "id": "opt_d",
+          "text": "Regenerate with no changes"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_79",
+      "sectionId": "sec-content",
+      "type": "MCQ_SINGLE",
+      "title": "AI Content Creation \u00b7 Q4",
+      "prompt": "An Instagram post flow generates a caption and, separately, an image-generation prompt. A reviewer notices the image prompt describes something unrelated to the caption's topic. What's the defect?",
+      "marks": 3,
+      "comp": "AI Content Creation",
+      "tier": "Proficient",
+      "explanationHint": "Alignment defect between parallel outputs.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "This is expected behavior"
+        },
+        {
+          "id": "opt_b",
+          "text": "The caption is too long"
+        },
+        {
+          "id": "opt_c",
+          "text": "A break in the caption/image-prompt alignment \u2014 the two outputs should describe the same underlying content"
+        },
+        {
+          "id": "opt_d",
+          "text": "The hashtags are duplicated"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_80",
+      "sectionId": "sec-content",
+      "type": "MCQ_SINGLE",
+      "title": "AI Content Creation \u00b7 Q5",
+      "prompt": "What is the purpose of separating \u2018caption\u2019 and \u2018hashtags\u2019 into distinct structured fields rather than one blob of text?",
+      "marks": 3,
+      "comp": "AI Content Creation",
+      "tier": "Proficient",
+      "explanationHint": "Functional purpose of structured output.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It only affects appearance"
+        },
+        {
+          "id": "opt_b",
+          "text": "It has no functional purpose"
+        },
+        {
+          "id": "opt_c",
+          "text": "It's required by Instagram's terms"
+        },
+        {
+          "id": "opt_d",
+          "text": "It lets downstream systems (posting tools, scheduling automation) reliably extract and use each part correctly"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_91",
+      "sectionId": "sec-productivity",
+      "type": "MCQ_SINGLE",
+      "title": "AI Productivity & Knowledge Mgmt \u00b7 Q1",
+      "prompt": "A team has a working AI-assisted design mockup for a customer-facing tool but no backend workflow built yet. What's the correct next step?",
+      "marks": 3,
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Advanced",
+      "explanationHint": "Build-order judgment: design \u2192 workflow.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Skip straight to marketing"
+        },
+        {
+          "id": "opt_b",
+          "text": "Launch it as-is"
+        },
+        {
+          "id": "opt_c",
+          "text": "Start over with a new design"
+        },
+        {
+          "id": "opt_d",
+          "text": "Build the workflow that actually powers the design before treating it as done"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_92",
+      "sectionId": "sec-productivity",
+      "type": "MCQ_SINGLE",
+      "title": "AI Productivity & Knowledge Mgmt \u00b7 Q2",
+      "prompt": "A team has built an automation workflow but has no interface for anyone to actually use it. What's missing?",
+      "marks": 3,
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Advanced",
+      "explanationHint": "Build-order judgment: workflow \u2192 app.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A different workflow tool"
+        },
+        {
+          "id": "opt_b",
+          "text": "More automation steps"
+        },
+        {
+          "id": "opt_c",
+          "text": "A frontend or interface layer connecting users to the workflow"
+        },
+        {
+          "id": "opt_d",
+          "text": "Nothing, the workflow alone is sufficient"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_93",
+      "sectionId": "sec-productivity",
+      "type": "MCQ_SINGLE",
+      "title": "AI Productivity & Knowledge Mgmt \u00b7 Q3",
+      "prompt": "What is the benefit of using a persistent AI \u2018project\u2019 space (with saved context/files) over starting a fresh chat every time for related work?",
+      "marks": 3,
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Advanced",
+      "explanationHint": "Claude Projects/knowledge-mgmt rationale.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It removes the need for review"
+        },
+        {
+          "id": "opt_b",
+          "text": "It retains relevant background so the AI doesn't need to be re-briefed each time, saving effort"
+        },
+        {
+          "id": "opt_c",
+          "text": "No benefit, fresh chats are always better"
+        },
+        {
+          "id": "opt_d",
+          "text": "It only works for coding"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_94",
+      "sectionId": "sec-productivity",
+      "type": "MCQ_SINGLE",
+      "title": "AI Productivity & Knowledge Mgmt \u00b7 Q4",
+      "prompt": "A team keeps re-explaining the same background information to an AI tool in every new conversation. What productivity practice would fix this?",
+      "marks": 3,
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Advanced",
+      "explanationHint": "Applied fix using Projects/Skills.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Keep repeating it \u2014 there's no alternative"
+        },
+        {
+          "id": "opt_b",
+          "text": "Write shorter prompts"
+        },
+        {
+          "id": "opt_c",
+          "text": "Use a different AI tool each time"
+        },
+        {
+          "id": "opt_d",
+          "text": "Set up a persistent project or reusable context/skill so the background is available automatically"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_95",
+      "sectionId": "sec-productivity",
+      "type": "MCQ_SINGLE",
+      "title": "AI Productivity & Knowledge Mgmt \u00b7 Q5",
+      "prompt": "What's the correct build order when a team has a validated idea but nothing built yet, following a design-to-workflow-to-app sequence?",
+      "marks": 3,
+      "comp": "AI Productivity & Knowledge Mgmt",
+      "tier": "Advanced",
+      "explanationHint": "Full build-order sequence item.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "Build the frontend first, then the workflow, then the design"
+        },
+        {
+          "id": "opt_b",
+          "text": "Skip design and workflow, go straight to launch"
+        },
+        {
+          "id": "opt_c",
+          "text": "Build all three simultaneously with no sequence"
+        },
+        {
+          "id": "opt_d",
+          "text": "Start with the design, then build the workflow it depends on, then connect the frontend/app layer"
+        }
+      ],
+      "correctOptionId": "opt_d"
+    },
+    {
+      "id": "asmt_q_106",
+      "sectionId": "sec-workflow",
+      "type": "MCQ_SINGLE",
+      "title": "AI Workflow Automation \u00b7 Q1",
+      "prompt": "A support automation has a trigger and an AI agent step, but the agent generates its reply as plain text instead of calling the defined send-message tool. What's the defect?",
+      "marks": 2,
+      "comp": "AI Workflow Automation",
+      "tier": "Awareness",
+      "explanationHint": "Execution-step defect.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "The memory is misconfigured"
+        },
+        {
+          "id": "opt_b",
+          "text": "No defect, plain text is fine"
+        },
+        {
+          "id": "opt_c",
+          "text": "The agent isn't using its available tool to actually deliver the message, so the reply likely never reaches the customer"
+        },
+        {
+          "id": "opt_d",
+          "text": "The trigger is broken"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_107",
+      "sectionId": "sec-workflow",
+      "type": "MCQ_SINGLE",
+      "title": "AI Workflow Automation \u00b7 Q2",
+      "prompt": "A chatbot flow has no memory component, so it treats every message in a conversation as if it's the first. What's the resulting problem?",
+      "marks": 2,
+      "comp": "AI Workflow Automation",
+      "tier": "Awareness",
+      "explanationHint": "Missing buffer-memory defect.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It automatically fixes itself over time"
+        },
+        {
+          "id": "opt_b",
+          "text": "The bot can't maintain context across a multi-message conversation, leading to repeated questions or disjointed replies"
+        },
+        {
+          "id": "opt_c",
+          "text": "No problem, this is more efficient"
+        },
+        {
+          "id": "opt_d",
+          "text": "It becomes faster"
+        }
+      ],
+      "correctOptionId": "opt_b"
+    },
+    {
+      "id": "asmt_q_108",
+      "sectionId": "sec-workflow",
+      "type": "MCQ_SINGLE",
+      "title": "AI Workflow Automation \u00b7 Q3",
+      "prompt": "An automated flow is triggered whenever a message arrives, but the flow has no rule for what happens if the AI agent isn't confident in its answer. What's missing?",
+      "marks": 2,
+      "comp": "AI Workflow Automation",
+      "tier": "Awareness",
+      "explanationHint": "Missing fallback path.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "A faster trigger"
+        },
+        {
+          "id": "opt_b",
+          "text": "Nothing is missing"
+        },
+        {
+          "id": "opt_c",
+          "text": "An escalation or fallback path for low-confidence or out-of-scope situations"
+        },
+        {
+          "id": "opt_d",
+          "text": "A longer buffer memory"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    },
+    {
+      "id": "asmt_q_116",
+      "sectionId": "sec-agentic",
+      "type": "MCQ_SINGLE",
+      "title": "Agentic AI \u00b7 Q1",
+      "prompt": "What distinguishes an \u2018agentic\u2019 flow from a simple linear automation?",
+      "marks": 1,
+      "comp": "Agentic AI",
+      "tier": "Awareness",
+      "explanationHint": "Core agentic-vs-linear distinction.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "An agentic flow includes a decision-making step where the AI determines the next action rather than following a fixed sequence"
+        },
+        {
+          "id": "opt_b",
+          "text": "Agentic flows are always slower"
+        },
+        {
+          "id": "opt_c",
+          "text": "Agentic flows never involve triggers"
+        },
+        {
+          "id": "opt_d",
+          "text": "There's no real difference"
+        }
+      ],
+      "correctOptionId": "opt_a"
+    },
+    {
+      "id": "asmt_q_117",
+      "sectionId": "sec-agentic",
+      "type": "MCQ_SINGLE",
+      "title": "Agentic AI \u00b7 Q2",
+      "prompt": "A campaign needs both a caption and an image brief produced together for every post, at volume. Why does running these as one coordinated flow (rather than one after another) improve throughput?",
+      "marks": 1,
+      "comp": "Agentic AI",
+      "tier": "Awareness",
+      "explanationHint": "Names the throughput mechanism.",
+      "options": [
+        {
+          "id": "opt_a",
+          "text": "It only works for a single post"
+        },
+        {
+          "id": "opt_b",
+          "text": "It doesn't \u2014 sequential is always faster"
+        },
+        {
+          "id": "opt_c",
+          "text": "Coordinated (parallel) generation with shared context avoids duplicated setup and keeps both outputs aligned without waiting on each other unnecessarily"
+        },
+        {
+          "id": "opt_d",
+          "text": "It removes the need for either output"
+        }
+      ],
+      "correctOptionId": "opt_c"
+    }
+  ]
+}

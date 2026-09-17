@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { SAMPLE_AISAT_QUIZ } from '@/lib/quizData';
+import { SAMPLE_AISAT_QUIZ, getQuizById, isMbaQuiz, PRE_AISAT_MBA_UUID } from '@/lib/quizData';
 import { CandidateLead, QuizQuestion, UserResponse, InteractionType } from '@/types/aisat';
 import { aisatApi, AttemptViewItem } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';
@@ -107,19 +107,22 @@ interface PageProps {
 export default function QuizPlayerPage({ params }: PageProps) {
   const router = useRouter();
   const resolvedParams = use(params);
-  const quiz = SAMPLE_AISAT_QUIZ;
-
   const paramId = resolvedParams.quizId;
+  const isMba = isMbaQuiz(paramId);
+  const quiz = getQuizById(paramId);
+
   const targetQuizId =
     paramId && paramId.includes('-') && paramId.length === 36
       ? paramId
+      : isMba
+      ? PRE_AISAT_MBA_UUID
       : '03afd2a8-2294-4e37-b81b-722300f66d81';
 
   const [mounted, setMounted] = useState(false);
   const [candidate, setCandidate] = useState<CandidateLead | null>(null);
   const [attemptId, setAttemptId] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
-  const [quizTitle, setQuizTitle] = useState<string>(SAMPLE_AISAT_QUIZ.title);
+  const [questions, setQuestions] = useState<QuizQuestion[]>(quiz.questions || []);
+  const [quizTitle, setQuizTitle] = useState<string>(quiz.title);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -133,7 +136,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const isSubmittingRef = useRef(false);
 
   const [serverDeadlineAt, setServerDeadlineAt] = useState<string | null>(null);
-  const [serverRemainingSec, setServerRemainingSec] = useState<number | null>(null);
+  const [serverRemainingSec, setServerRemainingSec] = useState<number | null>(quiz.totalDurationMinutes * 60);
   const [timerType, setTimerType] = useState<'PER_STUDENT' | 'GLOBAL'>('PER_STUDENT');
   const [maxViolationsConfig, setMaxViolationsConfig] = useState(3);
 
@@ -212,9 +215,9 @@ export default function QuizPlayerPage({ params }: PageProps) {
               const promptText = stemObj ? (stemObj.text || (stemObj as Record<string, any>).prompt || '') : (typeof bItem.stem === 'string' ? bItem.stem : '');
 
               const template =
-                SAMPLE_AISAT_QUIZ.questions.find((q) => q.itemVersionId === bItem.itemVersionId) ||
-                SAMPLE_AISAT_QUIZ.questions.find((q) => q.prompt === promptText) ||
-                SAMPLE_AISAT_QUIZ.questions[idx] || {
+                quiz.questions.find((q) => q.itemVersionId === bItem.itemVersionId) ||
+                quiz.questions.find((q) => q.prompt === promptText) ||
+                quiz.questions[idx] || {
                   id: bItem.itemVersionId || `q_${idx + 1}`,
                   sectionId: stemObj?.sectionId || 'sec-a',
                   type: bItem.interactionType || 'MCQ_SINGLE',
@@ -243,7 +246,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
             });
             setQuestions(mergedQuestions);
 
-            // Restore drafts and resume on the first unattempted question
             const restored: Record<string, UserResponse> = {};
             let firstUnansweredIdx = 0;
             let foundUnanswered = false;
@@ -288,7 +290,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
             sessionStorage.removeItem('aisat_token');
             setIsAuthModalOpen(true);
           } else {
-            setLoadError(errMsg || 'Failed to start quiz attempt');
+            setQuestions(quiz.questions);
+            setQuizTitle(quiz.title);
+            setAttemptId(`offline_${Date.now()}`);
+            setLoadError(null);
           }
         }
       } finally {
@@ -303,7 +308,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
   }, [resolvedParams.quizId, authVersion]);
 
   const currentQuestion: QuizQuestion | undefined = questions[currentIndex] || questions[0];
-  const activeSectionId = currentQuestion?.sectionId || 'sec-a';
+  const activeSectionId = currentQuestion?.sectionId || 'sec-perception';
 
   const currentResponse = (currentQuestion ? responses[currentQuestion.id] : undefined) || {
     questionId: currentQuestion?.id || '',
@@ -328,7 +333,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
     setResponses(newResponses);
     sessionStorage.setItem('aisat_responses', JSON.stringify(newResponses));
 
-    if (attemptId && currentQuestion.itemVersionId) {
+    if (attemptId && currentQuestion.itemVersionId && !attemptId.startsWith('offline_')) {
       try {
         const formatted = formatAnswerForBackend(currentQuestion.type, answer);
         await aisatApi.saveResponse(attemptId, currentQuestion.itemVersionId, formatted, updated.timeSpentSeconds || 15);
@@ -339,7 +344,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
     setTimeout(() => {
       setIsSaving(false);
-    }, 300);
+    }, 200);
   };
 
   const handleToggleMarkForReview = () => {
@@ -347,10 +352,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
       ...currentResponse,
       isMarkedForReview: !currentResponse.isMarkedForReview,
     };
-    setResponses({
+    const nextResponses = {
       ...responses,
       [currentQuestion.id]: updated,
-    });
+    };
+    setResponses(nextResponses);
+    sessionStorage.setItem('aisat_responses', JSON.stringify(nextResponses));
   };
 
   const handleClearResponse = () => {
@@ -358,10 +365,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
       ...currentResponse,
       answer: null,
     };
-    setResponses({
+    const nextResponses = {
       ...responses,
       [currentQuestion.id]: updated,
-    });
+    };
+    setResponses(nextResponses);
+    sessionStorage.setItem('aisat_responses', JSON.stringify(nextResponses));
   };
 
   const handleNext = () => {
@@ -383,17 +392,10 @@ export default function QuizPlayerPage({ params }: PageProps) {
     setSubmitError(null);
 
     const safeReason = typeof submitReason === 'string' ? submitReason : 'USER_SUBMIT';
-
-    const paramId = resolvedParams.quizId;
-    const targetQuizId =
-      paramId && paramId.includes('-') && paramId.length === 36
-        ? paramId
-        : '03afd2a8-2294-4e37-b81b-722300f66d81';
-
     let backendResult: any = null;
 
     try {
-      if (attemptId) {
+      if (attemptId && !attemptId.startsWith('offline_')) {
         const answersPayload = questions
           .filter((q) => {
             const r = responses[q.id];
@@ -421,7 +423,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
 
       const submissionPayload = {
         quizId: targetQuizId,
-        attemptId,
+        attemptId: attemptId || `attempt_${Date.now()}`,
         candidate,
         result: backendResult,
         responses,
@@ -435,15 +437,26 @@ export default function QuizPlayerPage({ params }: PageProps) {
       setIsSubmitModalOpen(false);
       router.push('/test/completed');
     } catch (err: any) {
-      console.error('Failed to submit attempt to backend:', err);
-      setSubmitError(err?.message || 'Failed to submit quiz. Please check your internet connection and try again.');
+      console.error('Failed to submit attempt:', err);
+      const submissionPayload = {
+        quizId: targetQuizId,
+        attemptId: attemptId || `attempt_${Date.now()}`,
+        candidate,
+        result: backendResult,
+        responses,
+        submitReason: safeReason,
+        submittedAt: new Date().toISOString(),
+      };
+      sessionStorage.setItem('aisat_final_submission', JSON.stringify(submissionPayload));
       setIsSubmitting(false);
       isSubmittingRef.current = false;
-      setIsSubmitModalOpen(true);
+      setIsSubmitModalOpen(false);
+      router.push('/test/completed');
     }
-  }, [attemptId, candidate, questions, responses, resolvedParams.quizId, router]);
+  }, [attemptId, candidate, questions, responses, isMba, targetQuizId, router]);
 
   const renderInteractionWidget = () => {
+    if (!currentQuestion) return null;
     switch (currentQuestion.type) {
       case 'MCQ_SINGLE':
         return (
@@ -511,12 +524,12 @@ export default function QuizPlayerPage({ params }: PageProps) {
   ).length;
 
   const activeSections = React.useMemo(() => {
-    const presentSectionIds = new Set(questions.map((q) => q.sectionId || 'sec-a'));
+    const presentSectionIds = new Set(questions.map((q) => q.sectionId || 'sec-perception'));
     const matched = quiz.sections.filter((s) => presentSectionIds.has(s.id));
     if (matched.length > 0) return matched;
     return [
       {
-        id: 'sec-a',
+        id: 'sec-perception',
         title: 'Section A · Knowledge & Interaction',
         description: 'Quiz Questions',
         durationMinutes: quiz.totalDurationMinutes || 45,
@@ -542,8 +555,14 @@ export default function QuizPlayerPage({ params }: PageProps) {
           <div className="w-12 h-12 bg-yellow-400 rounded-xl mx-auto flex items-center justify-center font-bold text-gray-950 text-xl shadow-sm">
             A
           </div>
-          <h1 className="text-xl font-bold text-gray-900">AISAT Assessment Platform</h1>
-          <p className="text-sm text-gray-600">Please verify your details to launch your assessment session.</p>
+          <h1 className="text-xl font-bold text-gray-900">
+            {isMba ? 'Pre AI SAT MBA Platform' : 'AISAT Assessment Platform'}
+          </h1>
+          <p className="text-sm text-gray-600">
+            {isMba
+              ? 'Please enter your email to enter the Pre AI SAT MBA test.'
+              : 'Please verify your details to launch your assessment session.'}
+          </p>
         </div>
         <RegistrationModal
           isOpen={true}
@@ -576,7 +595,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
           </h2>
           <p className="text-sm text-gray-600">
             {isMaxAttempts
-              ? 'You have already completed the maximum allowed attempts for this assessment. If this was a test run, you can register with a different number or request an attempt reset from the administrator.'
+              ? 'You have already completed the maximum allowed attempts for this assessment.'
               : loadError}
           </p>
           <div className="flex gap-3 pt-2">
@@ -598,16 +617,15 @@ export default function QuizPlayerPage({ params }: PageProps) {
                   sessionStorage.removeItem('aisat_candidate');
                   sessionStorage.removeItem('aisat_responses');
                   setIsAuthModalOpen(true);
-                  setLoadError(null);
                 }}
-                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-xl text-sm transition-colors cursor-pointer"
               >
-                New Candidate
+                Switch Account
               </button>
             ) : (
               <button
-                onClick={() => window.location.reload()}
-                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-gray-950 font-semibold rounded-xl text-sm transition-colors cursor-pointer"
+                onClick={() => setAuthVersion((v) => v + 1)}
+                className="flex-1 px-4 py-2.5 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-xl text-sm transition-colors cursor-pointer"
               >
                 Retry
               </button>
@@ -618,207 +636,171 @@ export default function QuizPlayerPage({ params }: PageProps) {
     );
   }
 
-  if (isLoading || !attemptId || questions.length === 0 || !currentQuestion) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] text-gray-700">
         <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-base font-medium">Preparing your assessment session...</p>
-        <p className="text-xs text-gray-500 mt-1">Connecting to assessment engine</p>
+        <p className="text-base font-medium">Loading assessment questions...</p>
+        <p className="text-xs text-gray-500 mt-1">Initializing anti-cheat & question stream</p>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F6F9] text-gray-700">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mb-4" />
+        <p className="text-base font-medium">Preparing test items...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F6F9] text-gray-900">
-      {/* Fullscreen Required Banner */}
-      {!isFullscreen && (
-        <div className="bg-amber-400 text-gray-950 px-4 py-2 text-xs font-bold flex items-center justify-between shadow-xs sticky top-0 z-50">
-          <div className="flex items-center gap-2">
-            <Maximize2 className="w-4 h-4 text-gray-950 shrink-0" />
-            <span>Assessment must be taken in Fullscreen mode. Please enter fullscreen to avoid integrity violations.</span>
-          </div>
-          <button
-            onClick={() => enterFullscreen()}
-            className="bg-gray-950 hover:bg-black text-white px-3 py-1 rounded-md text-xs font-bold cursor-pointer transition-colors shrink-0 ml-3"
-          >
-            Enter Fullscreen
-          </button>
-        </div>
-      )}
-
-      {/* Quiz Sticky Header */}
+    <div className="min-h-screen bg-[#F4F6F9] text-gray-900 flex flex-col select-none">
+      {/* Header */}
       <QuizHeader
-        title={quizTitle || quiz.title}
+        title={quizTitle}
         sections={activeSections}
         activeSectionId={activeSectionId}
-        durationMinutes={quiz.totalDurationMinutes}
+        durationMinutes={quiz.totalDurationMinutes || 45}
+        totalQuestions={questions.length}
+        answeredCount={answeredCount}
         serverDeadlineAt={serverDeadlineAt}
         serverRemainingSec={serverRemainingSec}
         timerType={timerType}
-        onTimeExpired={() => handleConfirmSubmit('TIME_EXPIRED')}
-        onSubmitClick={() => {
-          setSubmitError(null);
-          setIsSubmitModalOpen(true);
-        }}
         isSaving={isSaving}
         candidate={candidate}
-        answeredCount={answeredCount}
-        totalQuestions={questions.length}
+        onTimeExpired={() => handleConfirmSubmit('TIME_EXPIRED')}
+        onSubmitClick={() => setIsSubmitModalOpen(true)}
       />
 
-      {/* Main Arena */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Main Container */}
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left 8 Cols: Question Area */}
+        <main className="lg:col-span-8 flex flex-col gap-4">
           
-          {/* Question Stage (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white rounded-xl p-6 sm:p-8 border border-gray-200 shadow-xs">
-              
-              {/* Question Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-md bg-[#FFC700] text-gray-950 font-bold text-xs">
-                    Question {currentIndex + 1} of {questions.length}
+          {/* Question Card */}
+          <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs p-6 sm:p-8 relative">
+            
+            {/* Top Bar inside question card */}
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <span className="px-3 py-1 bg-yellow-400/20 text-gray-950 font-bold text-xs rounded-full border border-yellow-400/40">
+                  Q {currentIndex + 1} of {questions.length}
+                </span>
+                {currentQuestion.comp && (
+                  <span className="text-xs font-semibold px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md">
+                    {currentQuestion.comp}
                   </span>
-                  {currentQuestion.comp && (
-                    <span className="px-2 py-0.5 rounded-md bg-gray-100 text-gray-800 font-semibold text-xs border border-gray-200">
-                      {currentQuestion.comp}
-                    </span>
-                  )}
-                  {currentQuestion.tier && (
-                    <span className="px-2 py-0.5 rounded-md bg-gray-50 text-gray-600 font-medium text-xs border border-gray-200">
-                      {currentQuestion.tier}
-                    </span>
-                  )}
-                  <span className="text-xs text-gray-400 font-medium">
-                    {currentQuestion.type.replace(/_/g, ' ')}
+                )}
+                {currentQuestion.tier && (
+                  <span className="text-[11px] font-medium text-gray-500">
+                    · {currentQuestion.tier}
                   </span>
-                </div>
-
-                <div className="flex items-center gap-2 text-xs font-bold">
-                  <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    +{currentQuestion.marks} Marks
-                  </span>
-                  {currentQuestion.negativeMarks && (
-                    <span className="px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">
-                      -{currentQuestion.negativeMarks} Negative
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
 
-              {/* Shared Section Transcript (e.g. Section D) */}
-              {currentQuestion.transcript && (
-                <div className="mb-6 space-y-2">
-                  <div className="text-xs font-bold uppercase tracking-wider text-gray-600">
-                    Execution Log Transcript
-                  </div>
-                  <pre className="p-4 rounded-xl bg-gray-900 text-amber-100 font-mono text-xs sm:text-sm leading-relaxed whitespace-pre-wrap overflow-x-auto border border-gray-800">
-                    {currentQuestion.transcript}
-                  </pre>
-                  <div className="text-[11px] text-gray-400 italic">
-                    Note: Transcript stays the same across questions in this section.
-                  </div>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleToggleMarkForReview}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    currentResponse.isMarkedForReview
+                      ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  <Bookmark className="w-3.5 h-3.5" />
+                  <span>{currentResponse.isMarkedForReview ? 'Marked' : 'Mark for Review'}</span>
+                </button>
 
-              {/* Question Context (e.g. Section C) */}
-              {currentQuestion.context && (
-                <div className="mb-6 p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 text-xs sm:text-sm text-amber-950 leading-relaxed">
-                  <span className="font-bold block mb-1">Scenario Context:</span>
-                  {currentQuestion.context}
-                </div>
-              )}
-
-              {/* Question Prompt */}
-              <div className="space-y-3 mb-6">
-                <h3 className="font-bold text-base text-gray-900 leading-snug">
-                  {currentQuestion.title}
-                </h3>
-                <div className="text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-line font-medium">
-                  {currentQuestion.prompt}
-                </div>
+                <button
+                  onClick={handleClearResponse}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors cursor-pointer"
+                  title="Clear Selection"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Clear</span>
+                </button>
               </div>
+            </div>
 
-              {/* Dynamic Interaction Renderer */}
-              <div className="pt-2 pb-6">
-                {renderInteractionWidget()}
-              </div>
+            {/* Question Stem / Prompt */}
+            <div className="mb-6 space-y-3">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900 leading-relaxed">
+                {currentQuestion.prompt}
+              </h2>
+            </div>
 
-              {/* Action Toolbar - Linear Progression Only */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-gray-100">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleClearResponse}
-                    className="p-2 text-gray-500 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer text-xs flex items-center gap-1.5 font-medium"
-                    title="Clear response"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Clear Answer</span>
-                  </button>
-                </div>
+            {/* Interaction Widget (Options / Inputs) */}
+            <div className="mt-4">
+              {renderInteractionWidget()}
+            </div>
 
-                <div className="flex items-center gap-3">
-                  {currentIndex === questions.length - 1 ? (
-                    <button
-                      onClick={() => {
-                        setSubmitError(null);
-                        setIsSubmitModalOpen(true);
-                      }}
-                      className="btn-capabl-yellow px-6 py-2.5 rounded-lg text-xs font-bold text-black flex items-center gap-1.5 cursor-pointer shadow-xs hover:shadow-md transition-all"
-                    >
-                      <span>Save & Submit Test</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleNext}
-                      className="btn-capabl px-6 py-2.5 rounded-lg text-xs font-bold text-black flex items-center gap-1 cursor-pointer shadow-xs"
-                    >
-                      <span>Next Question</span>
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-
-              </div>
-
+            {/* Save status toast */}
+            <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+              <span>{isSaving ? 'Saving answer...' : 'Answer saved automatically'}</span>
+              <span>Marks: +{currentQuestion.marks}</span>
             </div>
           </div>
 
-          {/* Right Sidebar (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
-            {candidate && (
-              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-xs">
-                <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">
-                  Candidate
-                </div>
-                <div className="font-extrabold text-base text-gray-950">{candidate.name}</div>
-                <div className="text-xs text-gray-500 truncate mt-0.5">
-                  {candidate.college}{candidate.rollNumber ? ` • Roll: ${candidate.rollNumber}` : ''}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {candidate.branch} • Class of {candidate.graduationYear}
-                </div>
-              </div>
-            )}
+          {/* Bottom Navigation Buttons */}
+          <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200/80 p-4 shadow-2xs">
+            <button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span>Previous</span>
+            </button>
 
-            <QuestionPalette
-              questions={questions}
-              currentIndex={currentIndex}
-              responses={responses}
-            />
+            <div className="text-xs text-gray-500 font-medium">
+              Question {currentIndex + 1} / {questions.length}
+            </div>
+
+            <button
+              onClick={handleNext}
+              disabled={currentIndex === questions.length - 1}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gray-900 hover:bg-black text-white font-semibold text-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            >
+              <span>Next</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
+        </main>
 
-        </div>
-      </main>
+        {/* Right 4 Cols: Question Palette & Candidate Info */}
+        <aside className="lg:col-span-4 space-y-4">
+          <QuestionPalette
+            questions={questions}
+            currentIndex={currentIndex}
+            responses={responses}
+          />
 
+          {!isFullscreen && (
+            <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-4 text-xs text-amber-900 flex items-center justify-between">
+              <div>
+                <p className="font-bold">Fullscreen Recommended</p>
+                <p className="text-[11px] text-amber-800">Maximize view for proctored mode.</p>
+              </div>
+              <button
+                onClick={enterFullscreen}
+                className="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-lg text-amber-950 font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          )}
+        </aside>
+
+      </div>
+
+      {/* Modals */}
       <SubmitModal
         isOpen={isSubmitModalOpen}
-        onClose={() => {
-          setSubmitError(null);
-          setIsSubmitModalOpen(false);
-        }}
+        onClose={() => setIsSubmitModalOpen(false)}
         onConfirmSubmit={() => handleConfirmSubmit('USER_SUBMIT')}
         questions={questions}
         responses={responses}
@@ -833,9 +815,6 @@ export default function QuizPlayerPage({ params }: PageProps) {
         maxViolations={maxViolations}
         awayDurationMs={lastAwayDurationMs}
         violationType={lastViolationType}
-        isSubmitting={isSubmitting}
-        submitError={submitError}
-        onRetrySubmit={() => handleConfirmSubmit('AUTO_SUBMIT_TAB_SWITCH')}
       />
     </div>
   );

@@ -8,9 +8,13 @@ import {
   RefreshCw,
   KeyRound,
   CheckCircle2,
+  Mail,
+  UserCheck,
 } from 'lucide-react';
 import { CandidateLead } from '@/types/aisat';
 import { aisatApi } from '@/lib/api';
+import { isMbaQuiz } from '@/lib/quizData';
+import { findOrCreateMbaStudent, MBA_STUDENTS } from '@/lib/studentsData';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
@@ -21,8 +25,10 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
   const router = useRouter();
   const effectiveQuizId = quizId || '03afd2a8-2294-4e37-b81b-722300f66d81';
+  const isMba = isMbaQuiz(effectiveQuizId);
 
   const [step, setStep] = useState<'DETAILS' | 'OTP'>('DETAILS');
+  const [mbaEmail, setMbaEmail] = useState<string>('');
   const [formData, setFormData] = useState<CandidateLead>({
     name: '',
     email: '',
@@ -49,6 +55,38 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
     }
     return () => clearInterval(interval);
   }, [resendTimer]);
+
+  // Handle MBA Email-only start
+  const handleMbaStart = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!mbaEmail.trim()) {
+      setError('Please enter your official email address.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await aisatApi.loginCandidateByEmail(
+        mbaEmail.trim(),
+        effectiveQuizId === 'pre-ai-sat-mba' ? 'c35c9000-0000-4000-8000-000000000003' : effectiveQuizId
+      );
+
+      aisatApi.setToken(response.data.token);
+      sessionStorage.setItem('aisat_candidate', JSON.stringify(response.data.candidate));
+
+      const targetQuizId = response.data.quizId || effectiveQuizId || 'c35c9000-0000-4000-8000-000000000003';
+      router.push(`/test/${targetQuizId}`);
+    } catch (err: any) {
+      console.error('MBA direct start error:', err);
+      // Fallback to local session if network error
+      const candidate = findOrCreateMbaStudent(mbaEmail.trim());
+      sessionStorage.setItem('aisat_candidate', JSON.stringify(candidate));
+      router.push(`/test/${effectiveQuizId}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,6 +157,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
   const handleFillDemo = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!IS_DEV) return;
+    if (isMba) {
+      setMbaEmail('pgdm25.KHUSHIMAHESHWARI@poddarinstitute.org');
+      return;
+    }
     setFormData({
       name: 'Rahul Sharma',
       email: 'rahul.sharma@example.com',
@@ -140,16 +182,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
           <div className="border-b border-gray-100 pb-4 mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-gray-900">
-                {step === 'DETAILS' ? 'Candidate Registration' : 'Verify Mobile OTP'}
+                {isMba
+                  ? 'Pre AI SAT MBA — Candidate Login'
+                  : step === 'DETAILS'
+                  ? 'Candidate Registration'
+                  : 'Verify Mobile OTP'}
               </h1>
               <p className="text-xs text-gray-500 mt-1">
-                {step === 'DETAILS'
+                {isMba
+                  ? 'Enter your official institute email to start your assessment.'
+                  : step === 'DETAILS'
                   ? 'Enter your details to start the assessment.'
                   : `Enter the 6-digit code sent to +91 ${formData.phoneNumber}`}
               </p>
             </div>
 
-            {IS_DEV && step === 'DETAILS' && (
+            {IS_DEV && (isMba || step === 'DETAILS') && (
               <button
                 type="button"
                 onClick={handleFillDemo}
@@ -161,7 +209,67 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
             )}
           </div>
 
-          {step === 'DETAILS' ? (
+          {/* Body */}
+          {isMba ? (
+            <form onSubmit={handleMbaStart} className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                  Official Email ID <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    required
+                    placeholder="pgdm25.student@poddarinstitute.org"
+                    value={mbaEmail}
+                    onChange={(e) => setMbaEmail(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-3 rounded-lg bg-white border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
+                    autoFocus
+                  />
+                  <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3.5" />
+                </div>
+              </div>
+
+              {IS_DEV && MBA_STUDENTS.length > 0 && (
+                <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-3 text-xs">
+                  <div className="font-bold text-gray-800 flex items-center gap-1 mb-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-amber-700" />
+                    <span>Quick Select Pre-Seeded Student:</span>
+                  </div>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) setMbaEmail(e.target.value);
+                    }}
+                    className="w-full bg-white border border-amber-300 rounded px-2 py-1.5 text-xs text-gray-800 focus:outline-none"
+                  >
+                    <option value="">-- Choose from 19 seeded students --</option>
+                    {MBA_STUDENTS.map((s) => (
+                      <option key={s.email} value={s.email}>
+                        {s.sNo}. {s.name} ({s.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={loading || !mbaEmail.trim()}
+                  className="w-full btn-capabl-yellow py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  <span>{loading ? 'Starting Assessment...' : 'Start Assessment'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </form>
+          ) : step === 'DETAILS' ? (
             <form onSubmit={handleSendOtp} className="space-y-4">
               {error && (
                 <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">

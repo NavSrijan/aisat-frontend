@@ -153,6 +153,20 @@ export const aisatApi = {
     return data;
   },
 
+  async loginCandidateByEmail(email: string, quizId?: string): Promise<RegisterResponse> {
+    const res = await fetch(`${API_BASE_URL}/api/quiz-delivery/login-by-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, quizId }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || data.error || 'Email login failed');
+    }
+    return data;
+  },
+
   async startAttempt(quizId: string): Promise<AttemptViewResponse> {
     const token = this.getToken();
     if (!token) throw new Error('Not authenticated: No candidate token found');

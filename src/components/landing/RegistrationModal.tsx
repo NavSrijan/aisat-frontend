@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ArrowRight, ArrowLeft, RefreshCw, KeyRound, CheckCircle2 } from 'lucide-react';
+import { X, ArrowRight, ArrowLeft, RefreshCw, KeyRound, CheckCircle2, Mail, UserCheck } from 'lucide-react';
 import { CandidateLead } from '@/types/aisat';
 import { aisatApi } from '@/lib/api';
+import { isMbaQuiz } from '@/lib/quizData';
+import { findOrCreateMbaStudent, MBA_STUDENTS } from '@/lib/studentsData';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
@@ -120,6 +122,7 @@ export const CandidateDetailsStep: React.FC<CandidateDetailsStepProps> = ({
             <option value="Mechanical Engineering">Mechanical Engineering</option>
             <option value="Electrical Engineering">Electrical Engineering</option>
             <option value="Civil Engineering">Civil Engineering</option>
+            <option value="MBA / PGDM">MBA / PGDM</option>
           </select>
         </div>
 
@@ -257,6 +260,88 @@ export const OtpVerificationStep: React.FC<OtpVerificationStepProps> = ({
   );
 };
 
+/**
+ * Email-Only candidate entry step for "Pre AI SAT MBA"
+ */
+interface MbaEmailStepProps {
+  email: string;
+  setEmail: (val: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  loading: boolean;
+  error: string | null;
+}
+
+const MbaEmailStep: React.FC<MbaEmailStepProps> = ({ email, setEmail, onSubmit, loading, error }) => {
+  return (
+    <form onSubmit={onSubmit} className="p-6 space-y-5">
+      <div className="text-center space-y-1 pb-2">
+        <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 text-[#011C40] flex items-center justify-center mx-auto">
+          <Mail className="w-6 h-6 text-[#011C40]" />
+        </div>
+        <h3 className="text-base font-bold text-gray-900 pt-1">Pre AI SAT MBA Login</h3>
+        <p className="text-xs text-gray-500 max-w-xs mx-auto">
+          Enter your official institute email address to start the assessment.
+        </p>
+      </div>
+
+      {error && (
+        <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium text-center">
+          {error}
+        </div>
+      )}
+
+      <div>
+        <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+          Official Email ID <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <input
+            type="email"
+            required
+            placeholder="pgdm25.student@poddarinstitute.org"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full pl-9 pr-3.5 py-3 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#FFC700] transition-colors"
+            autoFocus
+          />
+          <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3.5" />
+        </div>
+      </div>
+
+      {IS_DEV && MBA_STUDENTS.length > 0 && (
+        <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-3 text-xs">
+          <div className="font-bold text-gray-800 flex items-center gap-1 mb-1.5">
+            <UserCheck className="w-3.5 h-3.5 text-amber-700" />
+            <span>Quick Select Pre-Seeded Student:</span>
+          </div>
+          <select
+            onChange={(e) => {
+              if (e.target.value) setEmail(e.target.value);
+            }}
+            className="w-full bg-white border border-amber-300 rounded px-2 py-1.5 text-xs text-gray-800 focus:outline-none"
+          >
+            <option value="">-- Choose from 19 seeded students --</option>
+            {MBA_STUDENTS.map((s) => (
+              <option key={s.email} value={s.email}>
+                {s.sNo}. {s.name} ({s.email})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading || !email.trim()}
+        className="w-full btn-capabl py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+      >
+        <span>{loading ? 'Starting Assessment...' : 'Start Assessment'}</span>
+        <ArrowRight className="w-4 h-4" />
+      </button>
+    </form>
+  );
+};
+
 interface RegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -266,7 +351,10 @@ interface RegistrationModalProps {
 
 export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, onClose, quizId, onSuccess }) => {
   const router = useRouter();
+  const isMba = isMbaQuiz(quizId);
+
   const [step, setStep] = useState<'DETAILS' | 'OTP'>('DETAILS');
+  const [mbaEmail, setMbaEmail] = useState<string>('');
   const [formData, setFormData] = useState<CandidateLead>({
     name: '',
     email: '',
@@ -295,6 +383,54 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
   }, [resendTimer]);
 
   if (!isOpen) return null;
+
+  // MBA Email-Only Submission handler
+  const handleMbaEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!mbaEmail.trim()) {
+      setError('Please enter your official email address.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await aisatApi.loginCandidateByEmail(
+        mbaEmail.trim(),
+        quizId === 'pre-ai-sat-mba' ? 'c35c9000-0000-4000-8000-000000000003' : quizId
+      );
+
+      aisatApi.setToken(response.data.token);
+      sessionStorage.setItem('aisat_candidate', JSON.stringify(response.data.candidate));
+
+      try {
+        if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch (_) {}
+
+      if (onSuccess) {
+        onSuccess(response.data.token, response.data.candidate);
+      } else {
+        const targetQuizId = response.data.quizId || quizId || 'c35c9000-0000-4000-8000-000000000003';
+        router.push(`/test/${targetQuizId}`);
+        onClose();
+      }
+    } catch (err: any) {
+      console.error('MBA direct registration error:', err);
+      // Fallback
+      const candidate = findOrCreateMbaStudent(mbaEmail.trim());
+      sessionStorage.setItem('aisat_candidate', JSON.stringify(candidate));
+      if (onSuccess) {
+        onSuccess(`token_mba_${Date.now()}`, candidate);
+      } else {
+        router.push(`/test/${quizId || 'c35c9000-0000-4000-8000-000000000003'}`);
+        onClose();
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -376,6 +512,10 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
   const handleFillDemo = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!IS_DEV) return;
+    if (isMba) {
+      setMbaEmail('pgdm25.KHUSHIMAHESHWARI@poddarinstitute.org');
+      return;
+    }
     setFormData({
       name: 'Rahul Sharma',
       email: 'rahul.sharma@example.com',
@@ -399,7 +539,9 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
           <div className="flex items-center gap-2">
             <span className="text-xl font-black tracking-tight text-gray-950">Capa</span>
             <span className="text-xl font-black tracking-tight bg-[#FFC700] text-gray-950 px-1 py-0.5 rounded-sm ml-0.5">bl.</span>
-            <span className="text-xs font-bold text-gray-500 ml-2">AISAT 2026</span>
+            <span className="text-xs font-bold text-gray-500 ml-2">
+              {isMba ? 'Pre AI SAT MBA' : 'AISAT 2026'}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             {IS_DEV && (
@@ -421,8 +563,16 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({ isOpen, on
           </div>
         </div>
 
-        {/* Modular Steps */}
-        {step === 'DETAILS' ? (
+        {/* Modal Body */}
+        {isMba ? (
+          <MbaEmailStep
+            email={mbaEmail}
+            setEmail={setMbaEmail}
+            onSubmit={handleMbaEmailSubmit}
+            loading={loading}
+            error={error}
+          />
+        ) : step === 'DETAILS' ? (
           <CandidateDetailsStep
             formData={formData}
             setFormData={setFormData}
