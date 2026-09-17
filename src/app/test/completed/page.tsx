@@ -91,16 +91,6 @@ export default function TestCompletedPage() {
         )}
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
-          {submission?.quizId && (
-            <Link
-              href={`/test/${submission.quizId}`}
-              className="w-full sm:w-auto btn-capabl px-6 py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              <span>Resume / Re-enter Test</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          )}
-
           <Link
             href="/"
             onClick={() => {
@@ -109,8 +99,9 @@ export default function TestCompletedPage() {
               sessionStorage.removeItem('aisat_candidate');
               sessionStorage.removeItem('aisat_responses');
             }}
-            className="w-full sm:w-auto px-6 py-3 rounded-lg font-bold text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            className="w-full sm:w-auto btn-capabl px-6 py-3 rounded-lg font-bold text-sm text-black flex items-center justify-center gap-2 shadow-xs cursor-pointer"
           >
+            <Home className="w-4 h-4" />
             <span>Return to Home</span>
           </Link>
         </div>
