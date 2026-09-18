@@ -181,7 +181,11 @@ export const aisatApi = {
 
     const data = await res.json();
     if (!res.ok || !data.success) {
-      throw new Error(data.message || data.error || 'Failed to start quiz attempt');
+      const err: any = new Error(data.message || data.error || 'Failed to start quiz attempt');
+      err.code = data.code;
+      err.details = data.details;
+      err.response = { data };
+      throw err;
     }
     return data;
   },

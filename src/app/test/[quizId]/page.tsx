@@ -10,6 +10,7 @@ import { QuestionPalette } from '@/components/quiz/QuestionPalette';
 import { SubmitModal } from '@/components/quiz/SubmitModal';
 import { TabSwitchWarningModal } from '@/components/quiz/TabSwitchWarningModal';
 import { RegistrationModal } from '@/components/landing/RegistrationModal';
+import { QuizWaitingRoom } from '@/components/quiz/QuizWaitingRoom';
 import { useExamIntegrity } from '@/hooks/useExamIntegrity';
 
 // Question Renderers
@@ -139,6 +140,13 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const [serverRemainingSec, setServerRemainingSec] = useState<number | null>(quiz.totalDurationMinutes * 60);
   const [timerType, setTimerType] = useState<'PER_STUDENT' | 'GLOBAL'>('PER_STUDENT');
   const [maxViolationsConfig, setMaxViolationsConfig] = useState(3);
+  const [quizNotOpenInfo, setQuizNotOpenInfo] = useState<{
+    availableFrom: string;
+    availableUntil?: string;
+    title?: string;
+    timeLimitMinutes?: number;
+    timerType?: 'PER_STUDENT' | 'GLOBAL';
+  } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -187,6 +195,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
         const attemptRes = await aisatApi.startAttempt(targetQuizId);
         if (!isMounted) return;
 
+        setQuizNotOpenInfo(null);
         if (attemptRes?.data?.quiz?.title) {
           setQuizTitle(attemptRes.data.quiz.title);
         }
@@ -282,6 +291,22 @@ export default function QuizPlayerPage({ params }: PageProps) {
         console.error('Backend startAttempt error:', err);
         if (isMounted) {
           const errMsg = err?.message || err?.response?.data?.message || err?.response?.data?.error || 'Failed to start assessment';
+          
+          if (
+            err?.code === 'QUIZ_NOT_OPEN_YET' ||
+            err?.details?.availableFrom ||
+            errMsg.toLowerCase().includes('quiz is not open yet') ||
+            errMsg.toLowerCase().includes('not open yet')
+          ) {
+            setQuizNotOpenInfo(err.details || {
+              availableFrom: '2026-09-18T06:30:00.000Z',
+              title: quiz.title,
+              timeLimitMinutes: quiz.totalDurationMinutes,
+            });
+            setLoadError(null);
+            return;
+          }
+
           if (
             errMsg.includes('401') ||
             errMsg.toLowerCase().includes('unauthorized') ||
@@ -573,6 +598,29 @@ export default function QuizPlayerPage({ params }: PageProps) {
           }}
         />
       </div>
+    );
+  }
+
+  if (quizNotOpenInfo) {
+    return (
+      <QuizWaitingRoom
+        quizTitle={quizNotOpenInfo.title || quizTitle || quiz.title}
+        availableFrom={quizNotOpenInfo.availableFrom}
+        availableUntil={quizNotOpenInfo.availableUntil}
+        durationMinutes={quizNotOpenInfo.timeLimitMinutes || quiz.totalDurationMinutes || 45}
+        candidate={candidate}
+        onEnter={() => {
+          setQuizNotOpenInfo(null);
+          setAuthVersion((v) => v + 1);
+        }}
+        onSwitchAccount={() => {
+          sessionStorage.removeItem('aisat_token');
+          sessionStorage.removeItem('aisat_candidate');
+          sessionStorage.removeItem('aisat_responses');
+          setQuizNotOpenInfo(null);
+          setIsAuthModalOpen(true);
+        }}
+      />
     );
   }
 
