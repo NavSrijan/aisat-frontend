@@ -1,9 +1,4 @@
 import { QuizManifest } from '@/types/aisat';
-import rawTechQuizManifest from '@/data/quizManifest.json';
-import rawMbaQuizManifest from '@/data/preAiSatMbaManifest.json';
-
-export const SAMPLE_AISAT_QUIZ: QuizManifest = rawTechQuizManifest as unknown as QuizManifest;
-export const PRE_AI_SAT_MBA_QUIZ: QuizManifest = rawMbaQuizManifest as unknown as QuizManifest;
 
 export const PRE_AISAT_MBA_UUID = 'c35c9000-0000-4000-8000-000000000003';
 
@@ -22,9 +17,37 @@ export function isMbaQuiz(quizId?: string | null): boolean {
   return MBA_QUIZ_IDS.includes(lower) || lower.includes('mba') || lower.includes('non-tech');
 }
 
+export const DEFAULT_QUIZ_METADATA: QuizManifest = {
+  id: PRE_AISAT_MBA_UUID,
+  title: 'Pre AI SAT MBA',
+  subtitle: 'Management & Applied AI Pre-Assessment',
+  code: 'PRE_AISAT_MBA',
+  totalDurationMinutes: 45,
+  totalMarks: 160,
+  instructions: [
+    'Answer based on practical business judgment.',
+    'There is no negative marking.',
+    'Please maintain full-screen focus throughout the assessment.'
+  ],
+  sections: [
+    {
+      id: 'sec-perception',
+      title: 'Section 1: AI Confidence & Perception',
+      description: 'Self-assessment of your AI usage and confidence',
+      durationMinutes: 10,
+      questionIds: [],
+    },
+    {
+      id: 'sec-assessment',
+      title: 'Section 2: Applied AI Competencies',
+      description: 'Objective MCQs evaluating practical AI execution and judgment',
+      durationMinutes: 35,
+      questionIds: [],
+    },
+  ],
+  questions: [],
+};
+
 export function getQuizById(quizId?: string | null): QuizManifest {
-  if (isMbaQuiz(quizId)) {
-    return PRE_AI_SAT_MBA_QUIZ;
-  }
-  return SAMPLE_AISAT_QUIZ;
+  return DEFAULT_QUIZ_METADATA;
 }

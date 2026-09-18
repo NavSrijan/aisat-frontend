@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { SAMPLE_AISAT_QUIZ, getQuizById, isMbaQuiz, PRE_AISAT_MBA_UUID } from '@/lib/quizData';
+import { getQuizById, isMbaQuiz, PRE_AISAT_MBA_UUID } from '@/lib/quizData';
 import { CandidateLead, QuizQuestion, UserResponse, InteractionType } from '@/types/aisat';
 import { aisatApi, AttemptViewItem } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';

@@ -18,10 +18,30 @@ import {
   Mail,
   Smartphone,
 } from 'lucide-react';
-import { SAMPLE_AISAT_QUIZ, PRE_AI_SAT_MBA_QUIZ } from '@/lib/quizData';
-import { MBA_STUDENTS } from '@/lib/studentsData';
 
 const ADMIN_PASSWORD = 'capablindia';
+
+const PODDAR_MBA_STUDENTS = [
+  { sNo: 1, name: 'KHUSHI MAHESHWARI', email: 'pgdm25.KHUSHIMAHESHWARI@poddarinstitute.org', phoneNumber: '9000000001', college: 'Poddar Group of Institutions' },
+  { sNo: 2, name: 'PRIYANKA TEKCHANDANI', email: 'pgdm25.priyankatekchandani@poddarinstitute.org', phoneNumber: '9000000002', college: 'Poddar Group of Institutions' },
+  { sNo: 3, name: 'MANASVI JAIN', email: 'pgdm25.manasvijain@poddarinstitute.org', phoneNumber: '9000000003', college: 'Poddar Group of Institutions' },
+  { sNo: 4, name: 'KANISHK SEN', email: 'pgdm25.kanishksen@poddarinstitute.org', phoneNumber: '9000000004', college: 'Poddar Group of Institutions' },
+  { sNo: 5, name: 'TUSHAR SHARMA', email: 'pgdm25.tusharsharma@poddarinstitute.org', phoneNumber: '9000000005', college: 'Poddar Group of Institutions' },
+  { sNo: 6, name: 'KUNAL PRAJAPAT', email: 'pgdm25.kunalprajapat@poddarinstitute.org', phoneNumber: '9000000006', college: 'Poddar Group of Institutions' },
+  { sNo: 7, name: 'SHIVANI SINGH', email: 'pgdm25.shivanisingh@poddarinstitute.org', phoneNumber: '9000000007', college: 'Poddar Group of Institutions' },
+  { sNo: 8, name: 'SHASHI KANT SHARMA', email: 'pgdm25.shashikantsharma@poddarinstitute.org', phoneNumber: '9000000008', college: 'Poddar Group of Institutions' },
+  { sNo: 9, name: 'DIKSHA SHARMA', email: 'pgdm25.dikshasharma@poddarinstitute.org', phoneNumber: '9000000009', college: 'Poddar Group of Institutions' },
+  { sNo: 10, name: 'SUMIT JANGIR', email: 'pgdm25.sumitjangir@poddarinstitute.org', phoneNumber: '9000000010', college: 'Poddar Group of Institutions' },
+  { sNo: 11, name: 'LOKESH SINGH CHOUHAN', email: 'pgdm25.lokeshsinghchouhan@poddarinstitute.org', phoneNumber: '9000000011', college: 'Poddar Group of Institutions' },
+  { sNo: 12, name: 'KHUSHBOO SINDHI', email: 'pgdm25.khushboosindhi@poddarinstitute.org', phoneNumber: '9000000012', college: 'Poddar Group of Institutions' },
+  { sNo: 13, name: 'AYUSH PAREEK', email: 'pgdm25.ayushpareek@poddarinstitute.org', phoneNumber: '9000000013', college: 'Poddar Group of Institutions' },
+  { sNo: 14, name: 'LALITA SHARMA', email: 'pgdm25.lalitasharma@poddarinstitute.org', phoneNumber: '9000000014', college: 'Poddar Group of Institutions' },
+  { sNo: 15, name: 'SURAJ JAIN', email: 'pgdm25.surajjain@poddarinstitute.org', phoneNumber: '9000000015', college: 'Poddar Group of Institutions' },
+  { sNo: 16, name: 'VIKASH KUMAR SAINI', email: 'pgdm25.vikashkumarsaini@poddarinstitute.org', phoneNumber: '9000000016', college: 'Poddar Group of Institutions' },
+  { sNo: 17, name: 'RAHUL SHARMA', email: 'pgdm25.rahulsharma@poddarinstitute.org', phoneNumber: '9000000017', college: 'Poddar Group of Institutions' },
+  { sNo: 18, name: 'BHUPENDER SINGH', email: 'pgdm25.bhupendersingh@poddarinstitute.org', phoneNumber: '9000000018', college: 'Poddar Group of Institutions' },
+  { sNo: 19, name: 'MOHIT SHARMA', email: 'pgdm25.mohitsharma@poddarinstitute.org', phoneNumber: '9000000019', college: 'Poddar Group of Institutions' },
+];
 
 interface TestItem {
   id: string;
@@ -84,13 +104,13 @@ export default function AdminPage() {
   const tests: TestItem[] = [
     {
       id: 'c35c9000-0000-4000-8000-000000000003',
-      code: PRE_AI_SAT_MBA_QUIZ.code,
-      title: PRE_AI_SAT_MBA_QUIZ.title,
-      subtitle: PRE_AI_SAT_MBA_QUIZ.subtitle,
+      code: 'PRE_AISAT_MBA',
+      title: 'Pre AI SAT MBA',
+      subtitle: 'Management & Applied AI Pre-Assessment',
       type: 'EMAIL_ONLY',
-      durationMinutes: PRE_AI_SAT_MBA_QUIZ.totalDurationMinutes,
-      totalMarks: PRE_AI_SAT_MBA_QUIZ.totalMarks,
-      totalQuestions: PRE_AI_SAT_MBA_QUIZ.questions.length,
+      durationMinutes: 45,
+      totalMarks: 160,
+      totalQuestions: 50,
       targetPath: '/test/c35c9000-0000-4000-8000-000000000003',
       landingPath: '/?quizId=c35c9000-0000-4000-8000-000000000003',
       description: 'Non-tech & Management AI benchmark test. Candidates authenticate using only their official email ID without phone number or OTP.',
@@ -98,13 +118,13 @@ export default function AdminPage() {
     },
     {
       id: '03afd2a8-2294-4e37-b81b-722300f66d81',
-      code: SAMPLE_AISAT_QUIZ.code,
-      title: SAMPLE_AISAT_QUIZ.title,
-      subtitle: SAMPLE_AISAT_QUIZ.subtitle,
+      code: 'AISAT_TECH_V1',
+      title: 'AI SAT Engineering & CS',
+      subtitle: 'National AI Benchmark Assessment',
       type: 'PHONE_OTP',
-      durationMinutes: SAMPLE_AISAT_QUIZ.totalDurationMinutes,
-      totalMarks: SAMPLE_AISAT_QUIZ.totalMarks,
-      totalQuestions: SAMPLE_AISAT_QUIZ.questions.length,
+      durationMinutes: 45,
+      totalMarks: 160,
+      totalQuestions: 40,
       targetPath: '/test/03afd2a8-2294-4e37-b81b-722300f66d81',
       landingPath: '/?quizId=03afd2a8-2294-4e37-b81b-722300f66d81',
       description: 'Engineering CS & Developer agentic AI benchmark evaluation with full proctored timer & coding challenges.',
@@ -112,7 +132,7 @@ export default function AdminPage() {
     },
   ];
 
-  const filteredStudents = MBA_STUDENTS.filter(
+  const filteredStudents = PODDAR_MBA_STUDENTS.filter(
     (s) =>
       s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
       s.email.toLowerCase().includes(studentSearch.toLowerCase()) ||
@@ -389,7 +409,7 @@ export default function AdminPage() {
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-amber-600" />
                 <h2 className="text-lg font-bold text-gray-950">
-                  Pre-Seeded MBA Students ({MBA_STUDENTS.length})
+                  Pre-Seeded MBA Students ({PODDAR_MBA_STUDENTS.length})
                 </h2>
               </div>
               <p className="text-xs text-gray-500 mt-0.5">

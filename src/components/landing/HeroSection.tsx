@@ -14,7 +14,6 @@ import {
 import { CandidateLead } from '@/types/aisat';
 import { aisatApi } from '@/lib/api';
 import { isMbaQuiz } from '@/lib/quizData';
-import { findOrCreateMbaStudent, MBA_STUDENTS } from '@/lib/studentsData';
 
 const IS_DEV = process.env.NODE_ENV !== 'production';
 
@@ -79,10 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
       router.push(`/test/${targetQuizId}`);
     } catch (err: any) {
       console.error('MBA direct start error:', err);
-      // Fallback to local session if network error
-      const candidate = findOrCreateMbaStudent(mbaEmail.trim());
-      sessionStorage.setItem('aisat_candidate', JSON.stringify(candidate));
-      router.push(`/test/${effectiveQuizId}`);
+      setError(err?.message || 'Login failed. Please verify your email address.');
     } finally {
       setLoading(false);
     }
@@ -235,28 +231,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ quizId }) => {
                   <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-3.5" />
                 </div>
               </div>
-
-              {IS_DEV && MBA_STUDENTS.length > 0 && (
-                <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-3 text-xs">
-                  <div className="font-bold text-gray-800 flex items-center gap-1 mb-1.5">
-                    <UserCheck className="w-3.5 h-3.5 text-amber-700" />
-                    <span>Quick Select Pre-Seeded Student:</span>
-                  </div>
-                  <select
-                    onChange={(e) => {
-                      if (e.target.value) setMbaEmail(e.target.value);
-                    }}
-                    className="w-full bg-white border border-amber-300 rounded px-2 py-1.5 text-xs text-gray-800 focus:outline-none"
-                  >
-                    <option value="">-- Choose from 19 seeded students --</option>
-                    {MBA_STUDENTS.map((s) => (
-                      <option key={s.email} value={s.email}>
-                        {s.sNo}. {s.name} ({s.email})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
 
               <div className="pt-2">
                 <button
