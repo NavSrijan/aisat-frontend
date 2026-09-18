@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { getQuizById, isMbaQuiz, PRE_AISAT_MBA_UUID } from '@/lib/quizData';
+import { getQuizById, isMbaQuiz, PRE_AISAT_MBA_UUID, resolveQuizId } from '@/lib/quizData';
 import { CandidateLead, QuizQuestion, UserResponse, InteractionType } from '@/types/aisat';
 import { aisatApi, AttemptViewItem } from '@/lib/api';
 import { QuizHeader } from '@/components/quiz/QuizHeader';
@@ -112,12 +112,7 @@ export default function QuizPlayerPage({ params }: PageProps) {
   const isMba = isMbaQuiz(paramId);
   const quiz = getQuizById(paramId);
 
-  const targetQuizId =
-    paramId && paramId.includes('-') && paramId.length === 36
-      ? paramId
-      : isMba
-      ? PRE_AISAT_MBA_UUID
-      : '03afd2a8-2294-4e37-b81b-722300f66d81';
+  const targetQuizId = resolveQuizId(paramId);
 
   const [mounted, setMounted] = useState(false);
   const [candidate, setCandidate] = useState<CandidateLead | null>(null);
